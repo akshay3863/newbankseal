@@ -23,6 +23,14 @@
   --color-brand-900: #123a7d;
   --color-brand-950: #0c2350;
 
+  /* A second, cooler blue used only by the "View All" pill in a section header. The
+     Figma source specifies this exact hex for that one component rather than a step
+     off the ramp above — kept as its own token, at native saturation, so `/5` and
+     `/10` opacity modifiers (Tailwind v4 resolves those through `color-mix()` for any
+     theme color) reproduce the design's near-invisible tint instead of approximating
+     it with `brand-50`, which is close but a visibly different hue at full strength. */
+  --color-brand-accent: #0078e8;
+
   /* --- Ink: near-neutral greys with a faint blue cast, matching the design --- */
   --color-ink-50: #f7f8fa;
   --color-ink-100: #f0f2f5;
@@ -67,6 +75,20 @@
      is built on — the two are deliberately different temperatures, which is what keeps
      white cards reading as lifted off the page rather than merging into it. */
   --color-surface-muted: #f9f6f5;
+/* Two recessed fills, and which one to use depends on what it is cut into rather
+     than on what the control is. `surface-well` sits on the muted page ground and is
+     warm to match it; `card-well` sits inside a white card and is a lighter neutral.
+     Neither belongs to the cool `ink` ramp: `ink-100` is the same lightness but carries
+     a blue cast, and against the warm page it read as a dirty grey rather than a well. */
+  --color-surface-well: #eeeae9;
+  --color-surface-well-hover: #e5e0df;
+  --color-card-well: #f6f6f6;
+  /* The brand-tinted well, behind the arrow on a category tile. Close to `brand-50` but
+     a touch deeper and cooler, and kept separate from it deliberately: `brand-50` backs
+     two dozen hover states, badges and soft buttons across the app, so tuning this one
+     tile through it would drag all of them along. */
+  --color-brand-well: #e6edff;
+  --color-brand-well-hover: #d6e0ff;
   --color-surface-inverse: #0a0b0d;
   --color-border-subtle: #e9ecf1;
   --color-border-strong: #d5dae2;

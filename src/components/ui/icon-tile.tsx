@@ -1,38 +1,31 @@
-import {
-  Building2,
-  Car,
-  CircleDollarSign,
-  Factory,
-  Home,
-  Landmark,
-  Recycle,
-  Store,
-  type LucideIcon,
-} from 'lucide-react';
+import { Building2, Landmark, Recycle, Store, type LucideIcon } from 'lucide-react';
+import { CategoryIcon, isCategoryIconKey } from '@/components/ui/category-icon';
 import { cn } from '@/lib/cn';
 
 /**
  * Icon rendering is allow-listed rather than dynamic.
  *
- * Category rows carry an `iconKey` string from the database. Mapping it through this
- * frozen record means a tampered row can only ever select one of these components —
- * it can never inject a component name or arbitrary markup into the tree.
+ * Category rows carry an `iconKey` string from the database. Mapping it through these
+ * frozen records means a tampered row can only ever select one of these icons — it can
+ * never inject a component name or arbitrary markup into the tree.
+ *
+ * The five categories the designer drew resolve to `CategoryIcon`; the rest fall back
+ * to the Lucide set they have always used. `machinery` is in that fallback because no
+ * artwork was supplied for Scrap, Plant & Machinery — drop its export in beside the
+ * others and move the key over, and nothing here changes.
  */
-const ICONS = {
-  vehicle: Car,
-  residential: Home,
-  industrial: Factory,
-  commercial: Building2,
+const FALLBACK_ICONS = {
   machinery: Recycle,
-  gold: CircleDollarSign,
   land: Landmark,
   retail: Store,
 } as const satisfies Record<string, LucideIcon>;
 
-export type IconKey = keyof typeof ICONS;
+export type IconKey = CategoryIconKeyUnion | keyof typeof FALLBACK_ICONS;
+
+type CategoryIconKeyUnion = Parameters<typeof CategoryIcon>[0]['icon'];
 
 export function isIconKey(value: string): value is IconKey {
-  return value in ICONS;
+  return isCategoryIconKey(value) || value in FALLBACK_ICONS;
 }
 
 const SIZES = {
@@ -52,8 +45,8 @@ export function IconTile({
   size?: keyof typeof SIZES;
   className?: string;
 }) {
-  const Icon = isIconKey(iconKey) ? ICONS[iconKey] : Building2;
   const dimensions = SIZES[size];
+  const Fallback = iconKey in FALLBACK_ICONS ? FALLBACK_ICONS[iconKey as keyof typeof FALLBACK_ICONS] : Building2;
 
   return (
     <span
@@ -64,7 +57,11 @@ export function IconTile({
       )}
       aria-hidden="true"
     >
-      <Icon className={dimensions.icon} strokeWidth={2} />
+      {isCategoryIconKey(iconKey) ? (
+        <CategoryIcon icon={iconKey} className={dimensions.icon} />
+      ) : (
+        <Fallback className={dimensions.icon} strokeWidth={2} />
+      )}
     </span>
   );
 }

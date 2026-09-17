@@ -122,7 +122,9 @@ function RailArrow({ side, hidden, onClick }: { side: 'left' | 'right'; hidden: 
       tabIndex={hidden ? -1 : 0}
       aria-label={side === 'left' ? 'Scroll left' : 'Scroll right'}
       className={cn(
-        'absolute top-1/2 z-20 hidden size-control-sm -translate-y-1/2 items-center justify-center rounded-full',
+        // Square with rounded corners, per the design — not the fully-rounded circle
+        // this used to be.
+        'absolute top-1/2 z-20 hidden size-control-sm -translate-y-1/2 items-center justify-center rounded-lg',
         'border border-border-subtle bg-surface text-ink-700 shadow-lift',
         'transition-all hover:bg-ink-50 hover:text-ink-900 sm:flex',
         side === 'left' ? '-left-3' : '-right-3',

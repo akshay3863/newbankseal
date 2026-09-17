@@ -15,8 +15,9 @@ export interface TabItem {
  * Home/End — so a keyboard user moves through the strip with one Tab stop rather
  * than one per pill. Selection state is owned by the caller; this only reports it.
  *
- * `soft` is the design's default treatment (grey fill, no border). `outline` is the
- * bordered variant the auction panel switcher uses.
+ * One treatment, matching the design: grey fill, no border, blue when selected. There
+ * was a bordered `outline` variant for the auction panel switcher, but the design has
+ * that strip filled like every other, so it had no callers left.
  */
 export function TabList({
   tabs,
@@ -25,7 +26,6 @@ export function TabList({
   ariaLabel,
   tabId,
   panelId,
-  variant = 'soft',
   className,
 }: {
   tabs: TabItem[];
@@ -36,7 +36,6 @@ export function TabList({
   tabId: (key: string) => string;
   /** Element id of the panel a tab controls. */
   panelId: (key: string) => string;
-  variant?: 'soft' | 'outline';
   className?: string;
 }) {
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -101,13 +100,9 @@ export function TabList({
             onKeyDown={onKeyDown}
             className={cn(
               'shrink-0 rounded-btn inline-flex h-control items-center px-4 text-meta font-medium whitespace-nowrap transition-colors',
-              selected && 'bg-brand-600 text-white',
-              !selected &&
-                variant === 'soft' &&
-                'bg-ink-100 text-ink-600 hover:bg-ink-200 hover:text-ink-900',
-              !selected &&
-                variant === 'outline' &&
-                'border border-border-subtle bg-surface text-ink-600 hover:bg-ink-50 hover:text-ink-900',
+              selected
+                ? 'bg-brand-600 text-white'
+                : 'bg-surface-well text-ink-700 hover:bg-surface-well-hover hover:text-ink-900',
             )}
           >
             {tab.label}

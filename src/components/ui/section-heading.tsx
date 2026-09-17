@@ -30,7 +30,13 @@ export function SectionHeading({
       {viewAllHref ? (
         <Link
           href={viewAllHref}
-          className="-mr-2 inline-flex min-h-control-sm shrink-0 items-center px-2 text-meta font-medium text-ink-500 transition-colors hover:text-brand-600 sm:mr-0 sm:px-0"
+          // A real pill, per the design — not plain text. Padding and radius are the
+          // exact values from Figma (10px radius, 8px/15px padding); the near-invisible
+          // fill is `brand-accent` at 5% so it still shows as a button and not a link.
+          // `tap-target` covers the gap between that padding and a 44px hit area on a
+          // phone (it shrinks to ~38px there) without growing the pill past its design
+          // size, the same trick used for the homepage map's pins.
+          className="tap-target inline-flex shrink-0 items-center rounded-btn bg-brand-accent/5 px-[0.9375rem] py-2 text-h5 font-semibold text-brand-accent transition-colors hover:bg-brand-accent/10"
         >
           {viewAllLabel}
         </Link>

@@ -38,7 +38,6 @@ export function AuctionTabs({ tabs }: { tabs: TabPanel[] }) {
         ariaLabel="Browse auctions by"
         tabId={(key) => `${baseId}-tab-${key}`}
         panelId={(key) => `${baseId}-panel-${key}`}
-        variant="outline"
       />
 
       <Card
@@ -48,12 +47,13 @@ export function AuctionTabs({ tabs }: { tabs: TabPanel[] }) {
         tabIndex={0}
         className="p-card"
       >
-        <h2 className="text-h5 font-semibold text-ink-900">{activeTab.title}</h2>
+        {/* The design rules off the heading before the chips begin. */}
+        <h2 className="border-b border-border-subtle pb-4 text-h5 font-semibold text-ink-900">{activeTab.title}</h2>
 
         {activeTab.items.length === 0 ? (
           <p className="mt-4 text-sm text-ink-500">No auctions listed in this category yet. Check back shortly.</p>
         ) : (
-          <ul className="mt-4 flex flex-wrap gap-2">
+          <ul className="mt-gap flex flex-wrap gap-gap">
             {activeTab.items.map((item) => (
               <li key={item.href}>
                 <Chip href={item.href}>
