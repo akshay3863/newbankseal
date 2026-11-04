@@ -54,10 +54,19 @@ export function BankLogo({
   logoUrl?: string | null;
   className?: string;
 }) {
+  // Every real logo sits on the same white, hairline-ringed tile with a little inset.
+  // The source files disagree — some carry their own white square, some are transparent
+  // marks that run to the edge — and set straight onto a tinted chip they came out as
+  // a row of different-sized, differently-boxed shapes.
   if (logoUrl) {
     return (
-      <span className={cn('relative size-7 shrink-0 overflow-hidden rounded-md', className)}>
-        <Image src={logoUrl} alt="" aria-hidden="true" fill sizes="28px" className="object-contain" />
+      <span
+        className={cn(
+          'relative size-7 shrink-0 overflow-hidden rounded-md bg-surface ring-1 ring-border-subtle',
+          className,
+        )}
+      >
+        <Image src={logoUrl} alt="" aria-hidden="true" fill sizes="28px" className="object-contain p-0.5" />
       </span>
     );
   }

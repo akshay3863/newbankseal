@@ -36,7 +36,7 @@ const FAQS = [
 export function FaqCard() {
   return (
     <Card className="p-card">
-      <h2 className="text-h5 font-semibold text-ink-900">Frequently asked questions</h2>
+      <h2 className="text-h5 font-bold text-ink-900">Frequently asked questions</h2>
 
       <div className="mt-3 divide-y divide-border-subtle">
         {FAQS.map((faq) => (

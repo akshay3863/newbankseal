@@ -47,7 +47,7 @@ export function ListingRow({ listing }: { listing: ListingCard }) {
           particular title was — so cards in the same list disagreed with each other.
         */}
         <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:gap-x-3">
-          <h3 className="text-body font-semibold text-brand-600">
+          <h3 className="text-body font-bold text-brand-600">
             {/* Stretched link: the whole row is one target, one tab stop. */}
             <Link href={href} className="hover:underline after:absolute after:inset-0 after:content-['']">
               {listing.title}

@@ -13,7 +13,7 @@ export function NewsRail({ articles }: { articles: ArticleCard[] }) {
     <Container as="section" className="pt-section" aria-labelledby="latest-news-heading">
       <SectionHeading id="latest-news-heading" lead="Latest" highlight="News" viewAllHref="/blog" />
 
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid gap-gap sm:grid-cols-2 lg:grid-cols-3">
         {articles.map((article) => (
           <li key={article.slug}>
             <article className="group relative flex h-full flex-col overflow-hidden rounded-card border border-border-subtle bg-surface shadow-card transition-shadow hover:shadow-lift">
@@ -25,7 +25,7 @@ export function NewsRail({ articles }: { articles: ArticleCard[] }) {
                     aria-hidden="true"
                     fill
                     sizes="(min-width: 1024px) 380px, (min-width: 640px) 45vw, 90vw"
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="object-cover transition-transform duration-700 ease-out-soft group-hover:scale-[1.03]"
                   />
                 ) : null}
               </div>
@@ -36,7 +36,7 @@ export function NewsRail({ articles }: { articles: ArticleCard[] }) {
                   read
                 </p>
 
-                <h3 className="mt-2 text-sm leading-snug font-semibold text-ink-900">
+                <h3 className="mt-2 text-sm leading-snug font-bold text-ink-900">
                   <Link href={`/blog/${article.slug}`} className="after:absolute after:inset-0 after:content-['']">
                     {article.title}
                   </Link>

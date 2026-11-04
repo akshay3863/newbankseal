@@ -21,7 +21,9 @@ export function TopCities({ cities }: { cities: CityFacet[] }) {
       <SectionHeading id="top-cities-heading" lead="Top" highlight="Cities" viewAllHref="/cities" />
 
       <Card className="p-card">
-        <ul className="grid grid-cols-2 gap-x-4 gap-y-block sm:grid-cols-3 lg:grid-cols-6">
+        {/* Three across from the smallest phone: at two, twelve cities made a six-row
+            column taller than the screen, with most of each row empty. */}
+        <ul className="grid grid-cols-3 gap-x-2 gap-y-4 sm:gap-x-4 lg:grid-cols-6 lg:gap-y-6">
           {cities.map((city) => (
             <li key={city.slug}>
               <Link
@@ -32,8 +34,11 @@ export function TopCities({ cities }: { cities: CityFacet[] }) {
                   <CityIcon slug={city.slug} className="size-7 sm:size-8" />
                 </span>
 
-                <span className="text-xs font-medium text-ink-800 group-hover:text-brand-700">
-                  {city.name} <span className="font-normal text-ink-400">({formatCount(city.listingCount)})</span>
+                {/* Name and count on their own lines, so a long name wraps cleanly in a
+                    narrow column instead of splitting the count off mid-phrase. */}
+                <span className="text-meta font-medium text-ink-800 group-hover:text-brand-700">
+                  {city.name}
+                  <span className="block font-normal text-ink-400">{formatCount(city.listingCount)} listings</span>
                 </span>
               </Link>
             </li>

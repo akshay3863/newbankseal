@@ -61,8 +61,11 @@ export function Rail({
   const scrollByPage = (direction: -1 | 1) => {
     const el = scrollerRef.current;
     if (!el) return;
-    // Move by ~85% of the viewport so the next card is partially visible as an affordance.
-    el.scrollBy({ left: direction * el.clientWidth * 0.85, behavior: 'smooth' });
+    // Exactly one page: the visible cards plus the gap after the last of them, which is
+    // where the next whole card begins. Anything less and snapping drags the rail back
+    // to a card that was already on screen.
+    const gap = parseFloat(getComputedStyle(el).columnGap) || 0;
+    el.scrollBy({ left: direction * (el.clientWidth + gap), behavior: 'smooth' });
   };
 
   return (
@@ -72,40 +75,21 @@ export function Rail({
         role="region"
         aria-label={ariaLabel}
         tabIndex={0}
-        className={cn('rail gap-gap pb-1', itemClassName)}
+        // How many whole cards a page holds, and the gap `rail-item` subtracts to fit
+        // them. One on a phone, two where two still leave each card room for its price
+        // and button, three at full width.
+        className={cn(
+          'rail gap-(--rail-gap) pb-1 [--rail-gap:var(--spacing-gap)]',
+          '[--rail-per-view:1] sm:[--rail-per-view:2] lg:[--rail-per-view:3]',
+          itemClassName,
+        )}
       >
         {children}
       </div>
 
-      <RailEdgeFade side="left" hidden={!canScrollLeft} />
-      <RailEdgeFade side="right" hidden={!canScrollRight} />
-
       <RailArrow side="left" hidden={!canScrollLeft} onClick={() => scrollByPage(-1)} />
       <RailArrow side="right" hidden={!canScrollRight} onClick={() => scrollByPage(1)} />
     </div>
-  );
-}
-
-/**
- * The soft page-coloured fade at each end of a rail: it signals "there is more this
- * way" and stops a card from being sliced off at a hard edge.
- *
- * Purely decorative — `aria-hidden` and `pointer-events-none` keep it out of both the
- * accessibility tree and the drag/scroll path. It tracks the same scroll state as the
- * arrows, so a rail that fits its container shows no fade at all.
- */
-function RailEdgeFade({ side, hidden }: { side: 'left' | 'right'; hidden: boolean }) {
-  return (
-    <div
-      aria-hidden="true"
-      className={cn(
-        'pointer-events-none absolute inset-y-0 z-10 w-10 transition-opacity duration-200 sm:w-16',
-        side === 'left'
-          ? 'left-0 bg-gradient-to-r from-surface-muted to-transparent'
-          : 'right-0 bg-gradient-to-l from-surface-muted to-transparent',
-        hidden && 'opacity-0',
-      )}
-    />
   );
 }
 
@@ -126,7 +110,9 @@ function RailArrow({ side, hidden, onClick }: { side: 'left' | 'right'; hidden: 
         // this used to be.
         'absolute top-1/2 z-20 hidden size-control-sm -translate-y-1/2 items-center justify-center rounded-lg',
         'border border-border-subtle bg-surface text-ink-700 shadow-lift',
-        'transition-all hover:bg-ink-50 hover:text-ink-900 sm:flex',
+        // Named properties, not `transition-all`: the arrow is absolutely positioned
+        // and translated, and animating every property let it slide on resize.
+        'transition-[opacity,background-color,color] hover:bg-ink-50 hover:text-ink-900 sm:flex',
         side === 'left' ? '-left-3' : '-right-3',
         hidden && 'pointer-events-none opacity-0',
       )}

@@ -25,7 +25,7 @@ export default async function DashboardPage() {
 
   return (
     <Container className="py-section">
-      <h1 className="font-display text-h2 font-bold tracking-tight text-ink-900">
+      <h1 className="font-display text-h2 font-extrabold text-ink-900">
         Welcome back, {session.user.fullName.split(' ')[0]}
       </h1>
       <p className="mt-2 text-sm text-ink-500">
@@ -34,25 +34,25 @@ export default async function DashboardPage() {
 
       <div className="mt-block grid gap-gap sm:grid-cols-2 lg:grid-cols-3">
         <Card className="p-card">
-          <h2 className="text-sm font-semibold text-ink-900">Watchlist</h2>
+          <h2 className="text-sm font-bold text-ink-900">Watchlist</h2>
           <p className="mt-1.5 text-xs text-ink-500">Auctions you are tracking will appear here.</p>
         </Card>
 
         <Card className="p-card">
-          <h2 className="text-sm font-semibold text-ink-900">Your enquiries</h2>
+          <h2 className="text-sm font-bold text-ink-900">Your enquiries</h2>
           <p className="mt-1.5 text-xs text-ink-500">Interest you have expressed, and the bank&apos;s responses.</p>
         </Card>
 
         {canPublish ? (
           <Card className="p-card">
-            <h2 className="text-sm font-semibold text-ink-900">Listing review queue</h2>
+            <h2 className="text-sm font-bold text-ink-900">Listing review queue</h2>
             <p className="mt-1.5 text-xs text-ink-500">Submitted listings awaiting your approval.</p>
           </Card>
         ) : null}
 
         {canAudit ? (
           <Card className="p-card">
-            <h2 className="text-sm font-semibold text-ink-900">Audit log</h2>
+            <h2 className="text-sm font-bold text-ink-900">Audit log</h2>
             <p className="mt-1.5 text-xs text-ink-500">Security-sensitive actions across the platform.</p>
           </Card>
         ) : null}

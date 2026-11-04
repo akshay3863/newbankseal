@@ -48,7 +48,7 @@ export function AuctionTabs({ tabs }: { tabs: TabPanel[] }) {
         className="p-card"
       >
         {/* The design rules off the heading before the chips begin. */}
-        <h2 className="border-b border-border-subtle pb-4 text-h5 font-semibold text-ink-900">{activeTab.title}</h2>
+        <h2 className="border-b border-border-subtle pb-4 text-h5 font-bold text-ink-900">{activeTab.title}</h2>
 
         {activeTab.items.length === 0 ? (
           <p className="mt-4 text-sm text-ink-500">No auctions listed in this category yet. Check back shortly.</p>

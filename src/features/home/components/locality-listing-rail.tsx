@@ -89,7 +89,7 @@ export function LocalityListingRail({
               key={listing.id}
               listing={listing}
               variant="detailed"
-              className="rail-item w-[85vw] max-w-[380px] sm:w-[45vw] lg:w-[380px]"
+              className="rail-item"
             />
           ))}
         </Rail>

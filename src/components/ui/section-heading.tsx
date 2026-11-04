@@ -21,8 +21,10 @@ export function SectionHeading({
   id?: string;
 }) {
   return (
-    <div className={cn('mb-gap flex items-end justify-between gap-3', className)}>
-      <h2 id={id} className="font-display text-h4 font-bold tracking-tight text-ink-900">
+    // Centred, not baseline-aligned: the pill is taller than the heading's cap height,
+    // and bottom-aligning the two left the pill visibly hanging below the title.
+    <div className={cn('mb-gap flex items-center justify-between gap-3', className)}>
+      <h2 id={id} className="font-display text-h4 font-extrabold text-ink-900">
         {lead}
         {highlight ? <span className="text-brand-600"> {highlight}</span> : null}
       </h2>
@@ -36,7 +38,10 @@ export function SectionHeading({
           // `tap-target` covers the gap between that padding and a 44px hit area on a
           // phone (it shrinks to ~38px there) without growing the pill past its design
           // size, the same trick used for the homepage map's pins.
-          className="tap-target inline-flex shrink-0 items-center rounded-btn bg-brand-accent/5 px-[0.9375rem] py-2 text-h5 font-semibold text-brand-accent transition-colors hover:bg-brand-accent/10"
+          //
+          // Body size, not a heading size: at `text-h5` the label competed with the
+          // section title beside it instead of reading as the secondary action it is.
+          className="tap-target inline-flex shrink-0 items-center rounded-btn bg-brand-accent/5 px-[0.9375rem] py-2 text-body font-semibold text-brand-accent transition-colors hover:bg-brand-accent/10"
         >
           {viewAllLabel}
         </Link>

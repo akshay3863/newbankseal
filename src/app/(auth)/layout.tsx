@@ -89,7 +89,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="relative flex h-full flex-col p-10 xl:p-14">
           <div>
             <Wordmark tone="inverse" />
-            <p className="mt-6 max-w-sm font-display text-h2 font-bold tracking-tight text-white xl:max-w-md">
+            <p className="mt-6 max-w-sm font-display text-h2 font-extrabold text-white xl:max-w-md">
               The verified way to buy bank-auctioned assets in India.
             </p>
             <p className="mt-4 max-w-sm text-body leading-relaxed text-white/70">{siteConfig.tagline}</p>
@@ -117,7 +117,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               <div key={label}>
                 <dt className="sr-only">{label}</dt>
                 <dd>
-                  <span className="block font-display text-h4 font-bold text-white">{value}</span>
+                  <span className="block font-display text-h4 font-extrabold text-white">{value}</span>
                   <span className="mt-0.5 block text-2xs text-white/55">{label}</span>
                 </dd>
               </div>

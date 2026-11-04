@@ -20,7 +20,7 @@ export default function RouteError({ error, reset }: { error: Error & { digest?:
 
   return (
     <Container className="flex min-h-[60vh] flex-col items-center justify-center py-section-lg text-center">
-      <h1 className="font-display text-h2 font-bold tracking-tight text-ink-900">
+      <h1 className="font-display text-h2 font-extrabold text-ink-900">
         Something went wrong
       </h1>
       <p className="mt-3 max-w-md text-sm text-ink-500">
@@ -28,7 +28,7 @@ export default function RouteError({ error, reset }: { error: Error & { digest?:
       </p>
 
       {error.digest ? (
-        <p className="mt-4 font-mono text-2xs text-ink-400">Reference: {error.digest}</p>
+        <p className="mt-4 text-2xs tabular-nums text-ink-400">Reference: {error.digest}</p>
       ) : null}
 
       <div className="mt-block flex flex-wrap justify-center gap-3">

@@ -97,7 +97,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
 
       <div className="mt-5 flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
         <div className="min-w-0">
-          <h1 className="font-display text-h4 font-bold tracking-tight text-brand-600">
+          <h1 className="font-display text-h4 font-extrabold text-brand-600">
             {listing.title}
           </h1>
           <Link
@@ -147,7 +147,7 @@ export default async function ListingDetailPage({ params }: { params: Promise<{ 
 
         <aside className="min-w-0 space-y-4">
           <Card className="p-card">
-            <h2 className="text-h5 font-semibold text-ink-900">Share</h2>
+            <h2 className="text-h5 font-bold text-ink-900">Share</h2>
             <ul className="mt-4 flex items-center gap-4">
               {shareTargets(shareUrl).map((target) => (
                 <li key={target.label}>

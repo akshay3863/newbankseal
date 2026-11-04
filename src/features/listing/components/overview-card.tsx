@@ -27,7 +27,7 @@ export function OverviewCard({ listing }: { listing: ListingDetail }) {
 
   return (
     <Card className="p-card">
-      <h2 className="text-h5 font-semibold text-ink-900">Overview</h2>
+      <h2 className="text-h5 font-bold text-ink-900">Overview</h2>
 
       <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">
         {facts.map((fact) => (

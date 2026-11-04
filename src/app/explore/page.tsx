@@ -76,7 +76,7 @@ export default async function ExplorePage({
         </span>
       </nav>
 
-      <h1 className="mt-block font-display text-h4 font-bold tracking-tight text-ink-900">{heading}</h1>
+      <h1 className="mt-block font-display text-h4 font-extrabold text-ink-900">{heading}</h1>
 
       <div className="mt-5">
         <ExploreFilters query={query} banks={banks} categories={categories} />
@@ -121,7 +121,7 @@ export default async function ExplorePage({
 function EmptyState() {
   return (
     <div className="rounded-card border border-border-subtle bg-surface px-card py-section-lg text-center">
-      <h2 className="text-h5 font-semibold text-ink-900">No auctions match those filters</h2>
+      <h2 className="text-h5 font-bold text-ink-900">No auctions match those filters</h2>
       <p className="mt-2 text-sm text-ink-500">
         Try widening your search — clear a filter, or search a different locality.
       </p>

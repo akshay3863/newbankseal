@@ -6,7 +6,7 @@ export default function NotFound() {
   return (
     <Container className="flex min-h-[60vh] flex-col items-center justify-center py-section-lg text-center">
       <p className="font-display text-sm font-semibold tracking-wide text-brand-600 uppercase">404</p>
-      <h1 className="mt-3 font-display text-h2 font-bold tracking-tight text-ink-900">
+      <h1 className="mt-3 font-display text-h2 font-extrabold text-ink-900">
         We couldn&apos;t find that page
       </h1>
       <p className="mt-3 max-w-md text-sm text-ink-500">

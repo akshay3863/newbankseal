@@ -6,9 +6,9 @@ import { siteConfig } from '@/lib/site-config';
 /**
  * "How Bank Seal Makes Asset Ownership Easier".
  *
- * Three columns: two benefits under the heading on the left, the photograph in the
- * middle, three more on the right — the arrangement in the design. Below `lg` the
- * photo moves to the top and the benefits stack into one column.
+ * The heading across the top, then three columns: two benefits on the left, the
+ * photograph in the middle, three more on the right, both lists centred on the photo.
+ * Below `lg` the photo moves above the benefits and they stack into one column.
  */
 interface Benefit {
   icon: FeatureIconKey;
@@ -58,21 +58,23 @@ export function ValueProps() {
   return (
     <section className="mt-section-lg bg-surface py-section-lg" aria-labelledby="value-props-heading">
       <Container>
-        <div className="grid items-start gap-block lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)_minmax(0,1fr)] lg:gap-10">
-          <div className="lg:pt-2">
-            <h2
-              id="value-props-heading"
-              className="font-display text-h2 font-bold tracking-tight text-ink-900"
-            >
-              How <span className="text-brand-600">{siteConfig.wordmark}</span> Makes Asset Ownership Easier
-            </h2>
+        {/* The heading spans the section rather than sitting atop the left column. In
+            the left column it pushed that list down by its own height, so the two lists
+            started at different heights either side of the photo and the third column
+            never lined up with anything. */}
+        <h2
+          id="value-props-heading"
+          className="max-w-3xl font-display text-h2 font-extrabold text-ink-900"
+        >
+          How <span className="text-brand-600">{siteConfig.wordmark}</span> Makes Asset Ownership Easier
+        </h2>
 
-            <ul className="mt-block space-y-6">
-              {leftColumn.map((benefit) => (
-                <BenefitItem key={benefit.title} {...benefit} />
-              ))}
-            </ul>
-          </div>
+        <div className="mt-block grid gap-block lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)_minmax(0,1fr)] lg:items-center lg:gap-10">
+          <ul className="space-y-block">
+            {leftColumn.map((benefit) => (
+              <BenefitItem key={benefit.title} {...benefit} />
+            ))}
+          </ul>
 
           {/* The design frames the photo with a white inset border and a soft shadow. */}
           <div className="order-first mx-auto w-full max-w-sm lg:order-none lg:max-w-none">
@@ -87,7 +89,7 @@ export function ValueProps() {
             </div>
           </div>
 
-          <ul className="space-y-6 lg:pt-2">
+          <ul className="space-y-block">
             {rightColumn.map((benefit) => (
               <BenefitItem key={benefit.title} {...benefit} />
             ))}
@@ -101,11 +103,13 @@ export function ValueProps() {
 function BenefitItem({ icon, title, body }: Omit<Benefit, 'column'>) {
   return (
     <li>
-      <span className="inline-flex size-11 items-center justify-center rounded-xl bg-brand-600 text-white">
+      {/* The same tile as `IconTile`'s compact size on the category grid's phone
+          layout, so the blue squares on the page come in one size, not three. */}
+      <span className="inline-flex size-12 items-center justify-center rounded-xl bg-brand-600 text-white">
         <FeatureIcon icon={icon} className="size-6" />
       </span>
-      <h3 className="mt-3 text-h5 font-semibold text-ink-900">{title}</h3>
-      <p className="mt-1.5 text-sm leading-relaxed text-ink-500">{body}</p>
+      <h3 className="mt-4 text-h5 font-bold text-ink-900">{title}</h3>
+      <p className="mt-1.5 text-body text-ink-500">{body}</p>
     </li>
   );
 }

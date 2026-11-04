@@ -39,7 +39,7 @@ export function ListingRail({
             listing={listing}
             variant={variant}
             priority={priorityFirstCard && index === 0}
-            className="rail-item w-[85vw] max-w-[380px] sm:w-[45vw] lg:w-[380px]"
+            className="rail-item"
           />
         ))}
       </Rail>

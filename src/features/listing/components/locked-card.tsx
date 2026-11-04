@@ -27,7 +27,7 @@ export function LockedCard({
     <Card className="p-card">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <h2 className="text-sm font-semibold text-ink-900">{title}</h2>
+          <h2 className="text-sm font-bold text-ink-900">{title}</h2>
 
           {unlocked ? (
             <p className="mt-1.5 text-sm text-ink-700">{field.value ?? emptyText}</p>

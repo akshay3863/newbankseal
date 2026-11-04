@@ -22,7 +22,7 @@ export function SimilarListings({ listings, viewAllHref }: { listings: ListingCa
   return (
     <Card className="p-card" aria-labelledby="similar-heading">
       <div className="mb-4 flex items-center justify-between gap-4">
-        <h2 id="similar-heading" className="text-body font-bold text-ink-900">
+        <h2 id="similar-heading" className="text-body font-extrabold text-ink-900">
           Similar Auction Properties
         </h2>
 
@@ -51,8 +51,8 @@ function SimilarCard({ listing }: { listing: ListingCard }) {
     .join('  |  ');
 
   return (
-    <article className="rail-item relative flex w-[19rem] flex-col rounded-xl bg-ink-50 p-4 sm:w-[21rem]">
-      <h3 className="truncate text-body font-semibold text-brand-600">
+    <article className="rail-item relative flex flex-col rounded-xl bg-ink-50 p-4">
+      <h3 className="truncate text-body font-bold text-brand-600">
         {/* Stretched link: one target for the whole card, one tab stop. */}
         <Link href={href} className="hover:underline after:absolute after:inset-0 after:content-['']">
           {listing.title}

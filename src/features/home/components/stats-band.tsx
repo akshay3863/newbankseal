@@ -37,7 +37,7 @@ export function StatsBand({ className }: { className?: string }) {
 
             <dt className="sr-only">{stat.label}</dt>
             <dd>
-              <span className="block font-display text-h1 leading-none font-bold tracking-tight text-brand-600">
+              <span className="block font-display text-h1 leading-none font-extrabold text-brand-600">
                 {stat.value}
               </span>
               <span className="mt-3 block text-body text-ink-800">{stat.label}</span>

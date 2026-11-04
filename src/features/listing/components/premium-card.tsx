@@ -17,7 +17,7 @@ export function PremiumCard() {
     <div className="rounded-card bg-brand-600 px-6 py-7 text-center text-white">
       <RosetteIcon />
 
-      <h2 className="mt-4 font-display text-h3 font-bold">Become premium member</h2>
+      <h2 className="mt-4 font-display text-h3 font-extrabold">Become premium member</h2>
 
       <p className="mx-auto mt-3 max-w-[17rem] text-sm leading-relaxed text-white/90">
         To view complete address, auction notice &amp; authorize person contact details

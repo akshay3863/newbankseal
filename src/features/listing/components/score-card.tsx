@@ -20,7 +20,7 @@ export function ScoreCard({ score }: { score: ListingScore }) {
   return (
     <Card className="p-card">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-h5 font-semibold text-ink-900">Listing Score</h2>
+        <h2 className="text-h5 font-bold text-ink-900">Listing Score</h2>
         <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-xs font-bold text-brand-700">
           {score.value}
           <span className="font-medium text-brand-500">/100</span>

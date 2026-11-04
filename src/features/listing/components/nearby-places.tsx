@@ -62,7 +62,7 @@ export function NearbyPlaces({
 
   return (
     <Card className="p-card">
-      <h2 className="text-h5 font-semibold text-ink-900">Nearby Places</h2>
+      <h2 className="text-h5 font-bold text-ink-900">Nearby Places</h2>
 
       <div role="tablist" aria-label="Nearby place categories" className="no-scrollbar mt-4 flex gap-2.5 overflow-x-auto pb-1">
         {available.map((category) => {

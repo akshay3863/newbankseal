@@ -20,17 +20,22 @@ import indiaStates from '../india-states.json';
  * Deliberately no tile layer. The design calls for flat grey states on the page ground,
  * not a street map, so only the boundary GeoJSON is drawn. Which also means no tile
  * requests, no attribution obligation, no third-party host in the CSP and nothing to
- * pay for — the geometry ships in the bundle (48 KB, simplified from Natural Earth).
+ * pay for — the geometry ships in the bundle (51 KB, simplified from Natural Earth).
  *
  * Every navigation gesture is off. This is a coverage illustration inside a marketing
  * section: a pannable, zoomable map here would swallow page scroll on a phone and
  * wander out of its framing.
  *
- * BOUNDARY NOTE, carried over from the SVG this replaces: Natural Earth depicts
- * internationally-recognised boundaries, which differ from the Government of India's
- * official depiction of Jammu & Kashmir and Ladakh. Indian law requires the Survey of
- * India depiction. Replace `india-states.json` with an SoI-derived outline before
- * launch — nothing in this component needs to change with it.
+ * BOUNDARY NOTE. Natural Earth draws the de facto line of control, which leaves out
+ * territory the Government of India's official map shows, and Indian law requires that
+ * depiction. `india-states.json` therefore keeps Natural Earth for every state but
+ * extends Jammu & Kashmir and Ladakh to the official outline, with the missing area
+ * taken from DataMeet's CC0 `india-composite.geojson` (github.com/datameet/maps,
+ * `Country/`). It is split as in the Survey of India's 2019 map: PoK goes to Jammu &
+ * Kashmir; Gilgit-Baltistan, the Shaksgam valley and Aksai Chin go to Ladakh. Two
+ * slivers along the Tibet border went to Ladakh and Himachal Pradesh. Both sources need
+ * no attribution, so the map still carries none. If this file is ever regenerated from
+ * a fresh Natural Earth download, the extension has to be redone.
  */
 
 /**

@@ -19,7 +19,7 @@ export default function PricingPage() {
   return (
     <Container className="py-section-lg">
       <div className="mx-auto max-w-2xl text-center">
-        <h1 className="font-display text-h1 font-bold tracking-tight text-ink-900">
+        <h1 className="font-display text-h1 font-extrabold text-ink-900">
           Ready to get started?
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-ink-500">

@@ -59,7 +59,7 @@ export function HeroSearch({ categories }: { categories: CategoryFacet[] }) {
         <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink-950/55 to-transparent" />
 
         <div className="relative px-card py-section sm:px-8 lg:px-12 lg:pt-16 lg:pb-8">
-          <h1 className="font-display text-hero font-bold tracking-tight text-white">
+          <h1 className="font-display text-hero font-extrabold text-white">
             <span className="block text-brand-500">Surat&apos;s bank</span>
             Auction Marketplace
           </h1>

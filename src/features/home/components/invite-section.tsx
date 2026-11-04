@@ -82,7 +82,9 @@ export function InviteSection() {
           <div>
             <h2
               id="invite-heading"
-              className="max-w-[30rem] font-display text-h1 font-bold tracking-tight text-ink-900"
+              // `text-h2`, the same rank as the value-props heading: the two are the
+              // page's feature headings and should match. At `h1` this rivalled the hero.
+              className="max-w-[30rem] font-display text-h2 font-extrabold text-ink-900"
             >
               We&apos;d Like to Personally Invite You to Explore a New Opportunity with{' '}
               <span className="text-brand-600">{siteConfig.wordmark}</span>

@@ -29,23 +29,28 @@ export function SiteFooter() {
           <StoreBadges className="mt-6" />
         </div>
 
-        {Object.entries(siteConfig.footerNav).map(([heading, links]) => (
-          <nav key={heading} aria-label={heading}>
-            <h2 className="text-h5 font-bold text-white">{heading}</h2>
-            <ul className="mt-4 sm:mt-5">
-              {links.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="inline-flex min-h-control-sm items-center text-body text-white/80 underline-offset-4 transition-colors hover:text-white hover:underline"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        ))}
+        {/* The link columns share one grid so they sit side by side on a phone too.
+            Stacked one per row, three short lists ran the footer to more than a screen
+            and a half of mostly empty blue. */}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-block sm:grid-cols-3 lg:col-span-3 lg:gap-8">
+          {Object.entries(siteConfig.footerNav).map(([heading, links]) => (
+            <nav key={heading} aria-label={heading}>
+              <h2 className="text-h5 font-extrabold text-white">{heading}</h2>
+              <ul className="mt-3 sm:mt-4">
+                {links.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="inline-flex min-h-control-sm items-center text-body text-white/80 underline-offset-4 transition-colors hover:text-white hover:underline"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+        </div>
       </Container>
 
       <div className="bg-ink-950">

@@ -73,7 +73,7 @@ export function AskPanel({
 
   return (
     <Card className="p-card">
-      <h2 className="text-h5 font-semibold text-ink-900">Ask about this property</h2>
+      <h2 className="text-h5 font-bold text-ink-900">Ask about this property</h2>
       <p className="mt-1.5 text-xs leading-relaxed text-ink-500">
         Answers come from this listing&apos;s published details only. For bidding, title or legal decisions, talk to a
         property lawyer.

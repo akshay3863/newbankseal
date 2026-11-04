@@ -30,7 +30,7 @@ export function CategorySection({
 }) {
   return (
     <Container as="section" className="pt-section" aria-labelledby="category-auctions-heading">
-      <SectionHeading id="category-auctions-heading" lead="Category" highlight="Auctions" className="mb-gap" />
+      <SectionHeading id="category-auctions-heading" lead="Category" highlight="Auctions" />
 
       <Card className="p-card">
         <ul className="grid gap-x-6 gap-y-block sm:grid-cols-2 lg:grid-cols-3">
@@ -70,12 +70,19 @@ export function CategorySection({
         </ul>
       </Card>
 
-      <Card className="mt-block p-card">
-        <h3 className="border-b border-border-subtle pb-4 font-display text-h4 font-bold tracking-tight text-ink-900">
-          Popular Bank e-Auction Properties
-        </h3>
+      {/* A section heading on the page ground, like every other block on the homepage.
+          It used to be a bold display title inside the card, which put a third heading
+          style on the page — larger than the tab panel's title above it and different in
+          face from the section titles around it. */}
+      <SectionHeading
+        id="popular-banks-heading"
+        lead="Popular Bank"
+        highlight="e-Auctions"
+        className="mt-section"
+      />
 
-        <ul className="mt-gap flex flex-wrap gap-gap">
+      <Card className="p-card">
+        <ul className="flex flex-wrap gap-gap" aria-labelledby="popular-banks-heading">
           {banks.map((bank) => {
             const active = bank.slug === activeBankSlug;
 

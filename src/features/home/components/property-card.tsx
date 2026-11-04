@@ -55,7 +55,7 @@ export function PropertyCard({
 
         <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4">
           <div className="min-w-0">
-            <h3 className="truncate text-sm font-semibold text-white">
+            <h3 className="truncate text-sm font-bold text-white">
               {/* The whole card is clickable via this stretched link — one tab stop, one target. */}
               <Link href={href} className="after:absolute after:inset-0 after:content-['']">
                 {listing.title}
@@ -106,7 +106,7 @@ export function PropertyCard({
       <div className="flex flex-1 flex-col p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="truncate text-sm font-semibold text-ink-900">
+            <h3 className="truncate text-sm font-bold text-ink-900">
               <Link href={href} className="after:absolute after:inset-0 after:content-['']">
                 {listing.title}
               </Link>
@@ -165,9 +165,11 @@ function ListingImage({
         fill
         // Card widths across the responsive rail; keeps the optimiser from shipping
         // a 1200px source into a 280px slot on mobile.
-        sizes="(min-width: 1024px) 380px, (min-width: 640px) 45vw, 85vw"
+        sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
         priority={priority}
-        className="object-cover transition-transform duration-300 group-hover:scale-105"
+        // A slow, slight drift rather than a 5% jump: at 105% over 300ms the photo
+        // lurched forward the moment the pointer crossed the card.
+        className="object-cover transition-transform duration-700 ease-out-soft group-hover:scale-[1.03]"
       />
     </div>
   );

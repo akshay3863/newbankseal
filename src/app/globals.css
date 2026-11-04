@@ -93,12 +93,19 @@
   --color-border-subtle: #e9ecf1;
   --color-border-strong: #d5dae2;
 
-  /* --- Typography --- */
+  /* --- Typography ---
+     Two families and only two: Figtree for text, Barlow for titles (loaded in
+     `app/layout.tsx`). The `next/font` variables are named after the typeface rather
+     than the role, so they can never collide with these role tokens — `--font-display`
+     used to be both, and a variable defined in terms of itself resolves to nothing.
+
+     Figtree sits second in the display stack because Barlow has no ₹: a rupee figure
+     inside a heading falls through to our text face instead of to a system font. */
   --font-sans:
-    var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    var(--font-figtree), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     sans-serif;
   --font-display:
-    var(--font-display), var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    var(--font-barlow), var(--font-figtree), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   /* --- Type scale ---------------------------------------------------------
      Two halves, on purpose.
@@ -114,7 +121,8 @@
      without anyone maintaining a `text-2xl sm:text-3xl lg:text-[2.5rem]` ladder per
      heading — the ladders had drifted apart, and headings of the same rank were
      landing on different sizes in different sections. The desktop end of every ramp
-     is the size the design already used, so nothing moves at full width.
+     started at the size the design used; the headings have since been raised a step
+     for Barlow, below.
 
      Line heights are unitless ratios rather than the default rem pairs, so they scale
      with the fluid size instead of pinching as the type grows. */
@@ -125,18 +133,30 @@
   --text-body: 0.9375rem; /* 15px — the default reading size in cards and prose */
   --text-body--line-height: 1.5;
 
-  --text-hero: clamp(1.875rem, 1.4088rem + 1.989vw, 3rem); /* 30 → 48 */
-  --text-hero--line-height: 1.08;
-  --text-h1: clamp(1.75rem, 1.4392rem + 1.326vw, 2.5rem); /* 28 → 40 */
-  --text-h1--line-height: 1.15;
-  --text-h2: clamp(1.5rem, 1.2928rem + 0.884vw, 2rem); /* 24 → 32 */
-  --text-h2--line-height: 1.2;
-  --text-h3: clamp(1.375rem, 1.2196rem + 0.663vw, 1.75rem); /* 22 → 28 */
-  --text-h3--line-height: 1.25;
-  --text-h4: clamp(1.25rem, 1.1464rem + 0.442vw, 1.5rem); /* 20 → 24 */
-  --text-h4--line-height: 1.3;
-  --text-h5: clamp(1rem, 0.9482rem + 0.221vw, 1.125rem); /* 16 → 18 */
-  --text-h5--line-height: 1.4;
+  /* Sized for Barlow, a step above the scale the design was first drawn in. Barlow is
+     narrower than the face it replaced and has a smaller x-height, so at the old sizes
+     the same titles read lighter and shorter than intended. */
+  --text-hero: clamp(2rem, 1.4302rem + 2.431vw, 3.375rem); /* 32 → 54 */
+  --text-hero--line-height: 1.05;
+  --text-h1: clamp(1.875rem, 1.5124rem + 1.547vw, 2.75rem); /* 30 → 44 */
+  --text-h1--line-height: 1.1;
+  --text-h2: clamp(1.625rem, 1.366rem + 1.105vw, 2.25rem); /* 26 → 36 */
+  --text-h2--line-height: 1.15;
+  --text-h3: clamp(1.4375rem, 1.2562rem + 0.773vw, 1.875rem); /* 23 → 30 */
+  --text-h3--line-height: 1.2;
+  --text-h4: clamp(1.375rem, 1.2196rem + 0.663vw, 1.75rem); /* 22 → 28 */
+  --text-h4--line-height: 1.25;
+  --text-h5: clamp(1.0625rem, 0.9848rem + 0.331vw, 1.25rem); /* 17 → 20 */
+  --text-h5--line-height: 1.35;
+
+  /* --- Motion ---
+     The default every bare `transition-*` utility picks up. Tailwind's own is 150ms on
+     a symmetric ease, which made hovers start and stop abruptly; a slightly longer
+     ease-out settles instead. Kept short enough that nothing feels like it lags the
+     pointer. Reduced-motion users get none of it — see the base layer. */
+  --default-transition-duration: 200ms;
+  --default-transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 
   /* --- Radii: the design leans on generously rounded cards --- */
   --radius-btn: 0.625rem;
@@ -204,9 +224,20 @@
     background-color: var(--color-surface-muted);
     color: var(--color-ink-900);
     font-family: var(--font-sans);
-    font-feature-settings: 'cv11', 'ss01';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Every title is Barlow, whether or not its call site remembered `font-display`.
+     Only a third of the headings in the app carried the class, which is how card and
+     panel titles ended up in the text face beside section titles in the display one. */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
   }
 
   /* Tailwind v4 aligned buttons with the UA default (`cursor: default`). Our controls
@@ -282,9 +313,15 @@
   }
 }
 
+/* Items are sized by the rail, not by the card: exactly `--rail-per-view` of them fill
+   the scroller with the rail's gap between, so the visible edge always falls on a gap
+   and never through a card. The percentage resolves against the scroller, so this
+   holds at every width without a breakpoint per card. Fixed card widths used to leave
+   the third card sliced at whatever width the column happened to be. */
 @utility rail-item {
   scroll-snap-align: start;
   flex: none;
+  width: calc((100% - (var(--rail-per-view, 1) - 1) * var(--rail-gap, 0px)) / var(--rail-per-view, 1));
 }
 
 /* Entry animation for floating panels (select menus, dropdowns, popovers).

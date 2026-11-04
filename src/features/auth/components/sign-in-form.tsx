@@ -79,7 +79,7 @@ export function SignInForm({ next }: { next?: string }) {
           <ShieldCheck className="size-3" aria-hidden="true" />
           Secure sign in
         </span>
-        <h1 className="mt-3.5 font-display text-h3 font-bold tracking-tight text-ink-900">
+        <h1 className="mt-3.5 font-display text-h3 font-extrabold text-ink-900">
           Welcome back
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-ink-500">

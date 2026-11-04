@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
+import localFont from 'next/font/local';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { clientEnv } from '@/lib/env';
@@ -7,21 +7,39 @@ import { siteConfig } from '@/lib/site-config';
 import './globals.css';
 
 /**
- * Fonts are self-hosted by `next/font` at build time — no runtime request to a font
- * CDN, which keeps `font-src 'self'` in the CSP and avoids leaking visitor IPs to a
- * third party.
+ * The two families in the design: Figtree for text, Barlow for titles. Nothing else.
+ *
+ * Both ship from `src/app/fonts` as WOFF2 and are served by `next/font` from our own
+ * origin — no runtime request to a font CDN, which keeps `font-src 'self'` in the CSP
+ * and avoids leaking visitor IPs to a third party.
+ *
+ * Figtree is one variable file, so every text weight costs the same single download.
+ * Barlow has no variable cut, so only the four weights a heading actually uses are
+ * shipped; ask for a weight outside 500–800 and the browser will synthesise it.
+ *
+ * Both are under the SIL Open Font License, which permits bundling them; the licence
+ * text travels inside each file's `name` table.
  */
-const inter = Inter({
-  subsets: ['latin'],
+const figtree = localFont({
+  src: './fonts/figtree-variable.woff2',
+  weight: '300 900',
   display: 'swap',
-  variable: '--font-inter',
+  variable: '--font-figtree',
 });
 
-const display = Plus_Jakarta_Sans({
-  subsets: ['latin'],
+const barlow = localFont({
+  src: [
+    { path: './fonts/barlow-500.woff2', weight: '500' },
+    { path: './fonts/barlow-600.woff2', weight: '600' },
+    { path: './fonts/barlow-700.woff2', weight: '700' },
+    { path: './fonts/barlow-800.woff2', weight: '800' },
+  ],
   display: 'swap',
-  weight: ['600', '700', '800'],
-  variable: '--font-display',
+  variable: '--font-barlow',
+  // Barlow has no ₹. Without a metric-matched Arial stand-in in its stack, a rupee
+  // figure in a heading falls through to Figtree — still one of our two families —
+  // rather than to Arial.
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {
@@ -59,7 +77,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-IN" className={`${inter.variable} ${display.variable}`} suppressHydrationWarning>
+    <html lang="en-IN" className={`${figtree.variable} ${barlow.variable}`} suppressHydrationWarning>
       <body className="min-h-dvh antialiased">
         <a
           href="#main"
