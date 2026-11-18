@@ -1,13 +1,14 @@
 import 'server-only';
 
 import { unstable_cache } from 'next/cache';
-import type { ArticleCard, BankFacet, CategoryFacet, CityFacet, ListingCard } from '@/domain/listing';
+import type { ArticleCard, BankFacet, CategoryFacet, CityFacet, ListingCard, StateFacet } from '@/domain/listing';
 import { logger } from '@/lib/logger';
 import {
   findBanks,
   findCategories,
   findCitiesWithListings,
   findPopularCities,
+  findStateFacets,
 } from '@/server/repositories/catalog-repository';
 import {
   findFeaturedListings,
@@ -21,6 +22,7 @@ export interface HomepageData {
   featuredListings: ListingCard[];
   citiesWithListings: CityFacet[];
   popularCities: CityFacet[];
+  states: StateFacet[];
   banks: BankFacet[];
   categories: CategoryFacet[];
   articles: ArticleCard[];
@@ -36,12 +38,13 @@ export interface HomepageData {
  */
 const loadHomepageData = unstable_cache(
   async (): Promise<HomepageData> => {
-    const [recentListings, featuredListings, citiesWithListings, popularCities, bankList, categoryList, articles] =
+    const [recentListings, featuredListings, citiesWithListings, popularCities, states, bankList, categoryList, articles] =
       await Promise.all([
         findRecentListings(12),
         findFeaturedListings(12),
         findCitiesWithListings(24),
         findPopularCities(12),
+        findStateFacets(),
         findBanks(16),
         findCategories(),
         findPublishedArticles(3),
@@ -52,12 +55,15 @@ const loadHomepageData = unstable_cache(
       featuredListings,
       citiesWithListings,
       popularCities,
+      states,
       banks: bankList,
       categories: categoryList,
       articles,
     };
   },
-  ['homepage-data-v1'],
+  // Bumped whenever `HomepageData` changes shape, so a cached v1 entry without
+  // `states` is never served to code that expects it.
+  ['homepage-data-v2'],
   { revalidate: 300, tags: ['listings', 'catalog', 'articles'] },
 );
 

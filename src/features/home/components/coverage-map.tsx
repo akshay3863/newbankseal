@@ -4,10 +4,44 @@ import 'leaflet/dist/leaflet.css';
 
 import type { FeatureCollection } from 'geojson';
 import type { LatLngExpression, Layer, Map as LeafletMap } from 'leaflet';
-import { type CSSProperties, useEffect, useRef } from 'react';
+import { type CSSProperties, useEffect, useMemo, useRef } from 'react';
 import { formatCount } from '@/lib/format';
-import type { MapMarker } from './india-map';
+import type { StateFacet } from '@/domain/listing';
 import indiaStates from '../india-states.json';
+
+/**
+ * One pin per state, on the state's `label` point.
+ *
+ * The label is the pole of inaccessibility of the state's mainland — the point deepest
+ * inside its outline — computed once when the boundary file was built. Not the
+ * centroid: for a crescent like West Bengal or a ring like Goa-and-surroundings the
+ * centroid can land outside the state, which on a map reads as the wrong place. Islands
+ * are ignored for the same reason, or the Andamans would drag a pin out to sea.
+ */
+interface MapMarker {
+  name: string;
+  lon: number;
+  lat: number;
+  listings: number;
+}
+
+const LABEL_POINTS = new Map(
+  indiaStates.features.map((feature) => [feature.properties.name, feature.properties.label] as const),
+);
+
+/** States are matched by name; one the map does not know is left off rather than guessed at. */
+function toMarkers(states: readonly StateFacet[]): MapMarker[] {
+  return states.flatMap((state) => {
+    const [lon, lat] = LABEL_POINTS.get(state.name) ?? [];
+    if (lon === undefined || lat === undefined || state.listingCount <= 0) return [];
+    return [{ name: state.name, lon, lat, listings: state.listingCount }];
+  });
+}
+
+// Leaflet takes colours as strings, not classes, so these mirror tokens in globals.css.
+const STATE_FILL = '#c9ced6'; // ink-300
+const STATE_FILL_COVERED = '#bfdbfe'; // brand-200
+const BRAND = '#1570ef'; // brand-600
 
 /**
  * India coverage map, drawn by Leaflet.
@@ -35,7 +69,9 @@ import indiaStates from '../india-states.json';
  * Kashmir; Gilgit-Baltistan, the Shaksgam valley and Aksai Chin go to Ladakh. Two
  * slivers along the Tibet border went to Ladakh and Himachal Pradesh. Both sources need
  * no attribution, so the map still carries none. If this file is ever regenerated from
- * a fresh Natural Earth download, the extension has to be redone.
+ * a fresh Natural Earth download, the extension has to be redone — and so do the
+ * `label` points each state carries for its pin (shapely's `polylabel` on the largest
+ * polygon of the state, tolerance 0.01°).
  */
 
 /**
@@ -43,14 +79,15 @@ import indiaStates from '../india-states.json';
  *
  * Enough that two stacked pins clear each other, and no more. Pushing harder than the
  * artwork needs throws a pin clean off its state, which on a country-scale map reads as
- * the wrong city rather than a tidier cluster.
+ * the wrong state rather than a tidier cluster.
  *
  * It doubles as each pin's hit area, published to CSS as `--bs-pin-hit`. The two have
  * to be the same number: a larger hit area would overlap the neighbouring pin's centre
- * and swallow taps meant for it, which is exactly what happens at phone widths where
- * the whole Gujarat cluster is barely 40px across. That puts the target under the 44px
- * comfortable minimum, accepted here because the map is an illustration and every city
- * and count it shows is repeated as text in the coverage card beside it.
+ * and swallow taps meant for it, which is exactly what happens at phone widths around
+ * Delhi, where three states' pins sit inside 40px. That puts the target under the 44px
+ * comfortable minimum, accepted here because the map is an illustration: the largest
+ * states are repeated as text in the card beside it, and every pin's own popup carries
+ * its figure.
  */
 const MIN_SEPARATION = 24;
 
@@ -76,13 +113,13 @@ function escapeHtml(value: string): string {
 }
 
 function popupHtml(marker: MapMarker): string {
-  return `<p class="bs-popup-city">${escapeHtml(marker.city)}</p>
+  return `<p class="bs-popup-city">${escapeHtml(marker.name)}</p>
     <p class="bs-popup-count"><strong>${escapeHtml(formatCount(marker.listings))}</strong> listings</p>`;
 }
 
 interface Placement {
   marker: MapMarker;
-  /** Screen position of the city itself. */
+  /** Screen position of the state's label point. */
   anchor: { x: number; y: number };
   /** Where the pin is drawn, after collision resolution. */
   pin: { x: number; y: number };
@@ -92,9 +129,9 @@ interface Placement {
 /**
  * Spread overlapping pins apart, in screen space.
  *
- * The covered cities are clustered in south Gujarat — Surat and Navsari are under 5px
- * apart at the rendered size — so drawn at their true positions the pins sit on top of
- * one another and the upper ones swallow clicks meant for the lower ones. This is the
+ * Pins are a state apart, but small neighbours are not far apart on a phone — Delhi's
+ * pin sits a few pixels from Haryana's and Uttar Pradesh's — and drawn at their true
+ * positions the upper pin would swallow clicks meant for the lower one. This is the
  * standard cartographic answer: nudge colliding markers outward and draw a leader back
  * to the real coordinate, so every pin stays reachable without lying about location.
  *
@@ -106,7 +143,7 @@ function place(markers: readonly MapMarker[], project: (marker: MapMarker) => { 
   const placed: Placement[] = [];
 
   // North to south, so the fan reads naturally and ties break the same way every time.
-  const ordered = [...markers].sort((a, b) => b.lat - a.lat || a.city.localeCompare(b.city));
+  const ordered = [...markers].sort((a, b) => b.lat - a.lat || a.name.localeCompare(b.name));
 
   for (const marker of ordered) {
     const anchor = project(marker);
@@ -138,8 +175,10 @@ function place(markers: readonly MapMarker[], project: (marker: MapMarker) => { 
   return placed;
 }
 
-export default function CoverageMap({ markers }: { markers: readonly MapMarker[] }) {
+export default function CoverageMap({ states }: { states: readonly StateFacet[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const markers = useMemo(() => toMarkers(states), [states]);
+  const covered = useMemo(() => new Set(markers.map((marker) => marker.name)), [markers]);
   const mapRef = useRef<LeafletMap | null>(null);
 
   useEffect(() => {
@@ -171,8 +210,15 @@ export default function CoverageMap({ markers }: { markers: readonly MapMarker[]
       });
 
       const boundary = L.geoJSON(indiaStates as FeatureCollection, {
-        // The flat grey-on-white treatment the design uses for the states.
-        style: { fillColor: '#c9ced6', fillOpacity: 1, color: '#ffffff', weight: 1.4, lineJoin: 'round' },
+        // The flat grey-on-white treatment the design uses, with the states we list in
+        // lifted to a pale brand tint so coverage reads before any pin is opened.
+        style: (feature) => ({
+          fillColor: covered.has(feature?.properties?.name) ? STATE_FILL_COVERED : STATE_FILL,
+          fillOpacity: 1,
+          color: '#ffffff',
+          weight: 1.4,
+          lineJoin: 'round',
+        }),
         // Only the pins are interactive; a click on Rajasthan should do nothing.
         interactive: false,
       }).addTo(map);
@@ -196,15 +242,15 @@ export default function CoverageMap({ markers }: { markers: readonly MapMarker[]
             // Leader back to the true coordinate, so a nudged pin still tells the truth.
             overlays.push(
               L.polyline([anchorLatLng, pinLatLng] as LatLngExpression[], {
-                color: '#1570ef',
+                color: BRAND,
                 opacity: 0.6,
                 weight: 1.5,
                 interactive: false,
               }).addTo(map),
               L.circleMarker(anchorLatLng, {
                 radius: 2,
-                color: '#1570ef',
-                fillColor: '#1570ef',
+                color: BRAND,
+                fillColor: BRAND,
                 fillOpacity: 1,
                 weight: 0,
                 interactive: false,
@@ -212,7 +258,7 @@ export default function CoverageMap({ markers }: { markers: readonly MapMarker[]
             );
           }
 
-          const label = `${marker.city}: ${formatCount(marker.listings)} listings`;
+          const label = `${marker.name}: ${formatCount(marker.listings)} listings`;
 
           const pinMarker = L.marker(pinLatLng, {
             icon: L.divIcon({
@@ -279,7 +325,7 @@ export default function CoverageMap({ markers }: { markers: readonly MapMarker[]
       mapRef.current?.remove();
       mapRef.current = null;
     };
-  }, [markers]);
+  }, [markers, covered]);
 
   return (
     <div
@@ -295,7 +341,7 @@ export default function CoverageMap({ markers }: { markers: readonly MapMarker[]
       className="bs-map relative isolate z-0 aspect-1000/1071 w-full"
       style={{ '--bs-pin-hit': `${MIN_SEPARATION}px` } as CSSProperties}
       role="group"
-      aria-label="Cities where we currently list auctions"
+      aria-label="States where we currently list auctions"
     />
   );
 }

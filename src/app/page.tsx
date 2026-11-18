@@ -108,7 +108,7 @@ export default async function HomePage() {
 
       <NewsRail articles={data.articles} />
 
-      <InviteSection />
+      <InviteSection states={data.states} />
 
     </>
   );

@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { formatCount } from '@/lib/format';
 import { siteConfig } from '@/lib/site-config';
-import { IndiaMap, type MapMarker } from './india-map';
+import type { StateFacet } from '@/domain/listing';
+import { IndiaMap } from './india-map';
 import { StatsBand } from './stats-band';
 
 /**
@@ -15,16 +16,13 @@ import { StatsBand } from './stats-band';
  * each trying to paint a slice of the same image.
  */
 
-/** Cities we currently cover, with real coordinates so the pins are geographically right. */
-const COVERAGE: ReadonlyArray<MapMarker & { listings: number }> = [
-  { city: 'Ahmedabad', lon: 72.5714, lat: 23.0225, listings: 100 },
-  { city: 'Surat', lon: 72.8311, lat: 21.1702, listings: 200 },
-  { city: 'Navsari', lon: 72.952, lat: 20.9467, listings: 250 },
-  { city: 'Vapi', lon: 72.9051, lat: 20.3714, listings: 150 },
-  { city: 'Valsad', lon: 72.9342, lat: 20.5992, listings: 140 },
-];
+/** How many states the card beside the map names; the rest are still pinned. */
+const LISTED_STATES = 5;
 
-export function InviteSection() {
+export function InviteSection({ states }: { states: StateFacet[] }) {
+  const topStates = states.slice(0, LISTED_STATES);
+  const otherStates = states.length - topStates.length;
+
   return (
     <section className="relative isolate mt-section-lg overflow-hidden pb-section-lg" aria-labelledby="invite-heading">
       {/*
@@ -101,20 +99,30 @@ export function InviteSection() {
           </div>
 
           <div className="relative mx-auto w-full max-w-md lg:max-w-[34rem]">
-            <IndiaMap markers={COVERAGE} />
+            <IndiaMap states={states} />
 
-            {/* Sits over the map's lower half, just clear of the pin cluster, as in the design. */}
-            <div className="absolute right-2 bottom-[16%] w-44 rounded-lg bg-surface p-3 shadow-lift sm:w-52 lg:right-auto lg:left-[16%]">
-              <h3 className="sr-only">Listings by city</h3>
-              <dl className="space-y-1.5">
-                {COVERAGE.map((entry) => (
-                  <div key={entry.city} className="flex items-baseline justify-between gap-3 text-xs">
-                    <dt className="truncate text-ink-700">{entry.city}</dt>
-                    <dd className="shrink-0 tabular-nums text-ink-400">({formatCount(entry.listings)})</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
+            {/* On a wide screen it floats lower right, over the Bay of Bengal: with a
+                pin in every covered state, the sea is the one stretch no pin will land
+                on. Narrower than that the map is too small for any overlay to miss a
+                state, so the card drops below it instead. */}
+            {topStates.length > 0 ? (
+              <div className="mt-4 rounded-lg bg-surface p-3 shadow-lift lg:absolute lg:right-0 lg:bottom-[4%] lg:mt-0 lg:w-52">
+                <h3 className="text-2xs font-semibold tracking-wide text-ink-500 uppercase">Listings by state</h3>
+                <dl className="mt-2 space-y-1.5">
+                  {topStates.map((state) => (
+                    <div key={state.name} className="flex items-baseline justify-between gap-3 text-xs">
+                      <dt className="truncate text-ink-700">{state.name}</dt>
+                      <dd className="shrink-0 tabular-nums text-ink-400">{formatCount(state.listingCount)}</dd>
+                    </div>
+                  ))}
+                </dl>
+                {otherStates > 0 ? (
+                  <p className="mt-2 border-t border-border-subtle pt-2 text-2xs text-ink-400">
+                    + {otherStates} more {otherStates === 1 ? 'state' : 'states'} on the map
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
           </div>
         </div>
 

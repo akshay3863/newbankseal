@@ -3,7 +3,7 @@ import 'server-only';
 import { asc, desc, sql } from 'drizzle-orm';
 import { db } from '@/db/client';
 import { banks, categories, cities } from '@/db/schema';
-import type { BankFacet, CategoryFacet, CityFacet } from '@/domain/listing';
+import type { BankFacet, CategoryFacet, CityFacet, StateFacet } from '@/domain/listing';
 
 /**
  * Reference-data reads. These power the filter chips and are the same for every
@@ -38,6 +38,25 @@ export async function findPopularCities(limit = 12): Promise<CityFacet[]> {
     .where(sql`${cities.isPopular} = 1`)
     .orderBy(asc(cities.name))
     .limit(clamp(limit, 12, 50));
+
+  return rows;
+}
+
+/**
+ * Listing totals per state, summed from the per-city counters rather than counted from
+ * `listings`, so the map agrees with the city chips and Top Cities on the same page.
+ * Both read the same denormalised figure; counting rows here would put two different
+ * numbers for Maharashtra a scroll apart.
+ */
+export async function findStateFacets(): Promise<StateFacet[]> {
+  const total = sql<number>`sum(${cities.listingCount})::int`;
+
+  const rows = await db
+    .select({ name: cities.state, listingCount: total })
+    .from(cities)
+    .where(sql`${cities.listingCount} > 0`)
+    .groupBy(cities.state)
+    .orderBy(desc(total), asc(cities.state));
 
   return rows;
 }

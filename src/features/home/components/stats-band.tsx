@@ -1,4 +1,5 @@
 import { cn } from '@/lib/cn';
+import { CountUp } from './count-up';
 
 /**
  * Trust figures shown above the footer.
@@ -6,12 +7,15 @@ import { cn } from '@/lib/cn';
  * The design sets the numbers in brand blue and separates the columns with a short,
  * vertically centred hairline rather than a full-height rule — one card holding four
  * readings, not four boxes butted together.
+ *
+ * Each figure counts up as the band scrolls into view. Only the number moves; a prefix
+ * or unit stays put, so "1–3 days" counts its upper bound and never reads as "1–0".
  */
 const STATS = [
-  { value: '50+', label: 'Active listings' },
-  { value: '70+', label: 'Happy Clients' },
-  { value: '15+', label: 'Partner banks' },
-  { value: '1–3 days', label: 'Verified onboarding' },
+  { to: 50, suffix: '+', label: 'Active listings' },
+  { to: 70, suffix: '+', label: 'Happy Clients' },
+  { to: 15, suffix: '+', label: 'Partner banks' },
+  { from: 1, to: 3, prefix: '1–', suffix: ' days', label: 'Verified onboarding' },
 ] as const;
 
 export function StatsBand({ className }: { className?: string }) {
@@ -22,7 +26,11 @@ export function StatsBand({ className }: { className?: string }) {
     >
       <dl className="grid grid-cols-2 gap-y-9 lg:grid-cols-4">
         {STATS.map((stat, index) => (
-          <div key={stat.label} className="relative px-4 sm:px-8">
+          // The label is the real `dt` and the figure the `dd`, as the list requires, and
+          // `flex-col-reverse` puts the figure on top as the design draws it. The label
+          // used to be written twice, a hidden `dt` and a visible copy inside the `dd`,
+          // which doubled it for anyone copying the text or reading in reader mode.
+          <div key={stat.label} className="relative flex flex-col-reverse px-4 sm:px-8">
             {/* Divider belongs to the item on its right, and is suppressed wherever
                 that item starts a row so no rule ever hangs off the card's edge. */}
             {index > 0 ? (
@@ -35,12 +43,15 @@ export function StatsBand({ className }: { className?: string }) {
               />
             ) : null}
 
-            <dt className="sr-only">{stat.label}</dt>
+            <dt className="mt-3 text-body text-ink-800">{stat.label}</dt>
             <dd>
-              <span className="block font-display text-h1 leading-none font-extrabold text-brand-600">
-                {stat.value}
-              </span>
-              <span className="mt-3 block text-body text-ink-800">{stat.label}</span>
+              <CountUp
+                from={'from' in stat ? stat.from : 0}
+                to={stat.to}
+                prefix={'prefix' in stat ? stat.prefix : ''}
+                suffix={stat.suffix}
+                className="block font-display text-h1 leading-none font-extrabold text-brand-600"
+              />
             </dd>
           </div>
         ))}

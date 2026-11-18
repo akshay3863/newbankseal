@@ -30,8 +30,8 @@ export function TopCities({ cities }: { cities: CityFacet[] }) {
                 href={`/explore?city=${encodeURIComponent(city.slug)}`}
                 className="group flex flex-col items-center gap-2.5 rounded-xl py-2 text-center transition-colors hover:bg-ink-50"
               >
-                <span className="inline-flex size-12 items-center justify-center rounded-xl text-ink-700 transition-colors group-hover:bg-brand-50 group-hover:text-brand-600 sm:size-14">
-                  <CityIcon slug={city.slug} className="size-7 sm:size-8" />
+                <span className="inline-flex size-14 items-center justify-center rounded-2xl text-ink-700 transition-colors group-hover:bg-brand-50 group-hover:text-brand-600 sm:size-16">
+                  <CityIcon slug={city.slug} className="size-11 sm:size-12" />
                 </span>
 
                 {/* Name and count on their own lines, so a long name wraps cleanly in a

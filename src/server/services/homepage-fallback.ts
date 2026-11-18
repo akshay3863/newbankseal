@@ -1,5 +1,5 @@
 import { SEED_BANKS, SEED_CATEGORIES, SEED_CITIES, buildSeedArticles } from '@/db/seed-data';
-import type { ArticleCard } from '@/domain/listing';
+import type { ArticleCard, StateFacet } from '@/domain/listing';
 import { SEED_LISTING_CARDS, toCityFacet } from './seed-projection';
 import type { HomepageData } from './home-service';
 
@@ -19,6 +19,18 @@ function toArticleCard(article: ReturnType<typeof buildSeedArticles>[number]): A
   };
 }
 
+/** The same per-state totals `findStateFacets` sums in SQL. */
+function toStateFacets(): StateFacet[] {
+  const totals = new Map<string, number>();
+  for (const city of SEED_CITIES) {
+    if (city.listingCount > 0) totals.set(city.state, (totals.get(city.state) ?? 0) + city.listingCount);
+  }
+
+  return [...totals]
+    .map(([name, listingCount]) => ({ name, listingCount }))
+    .sort((a, b) => b.listingCount - a.listingCount || a.name.localeCompare(b.name));
+}
+
 export const HOMEPAGE_FALLBACK: HomepageData = {
   recentListings: SEED_LISTING_CARDS.slice(0, 12),
   featuredListings: SEED_LISTING_CARDS.filter((listing) => listing.isFeatured).slice(0, 12),
@@ -32,6 +44,7 @@ export const HOMEPAGE_FALLBACK: HomepageData = {
     .sort((a, b) => a.name.localeCompare(b.name))
     .slice(0, 12)
     .map(toCityFacet),
+  states: toStateFacets(),
   banks: SEED_BANKS.map((bank) => ({
     slug: bank.slug,
     name: bank.name,

@@ -73,6 +73,12 @@ export interface CityFacet {
   listingCount: number;
 }
 
+/** Listings per state, for the homepage coverage map. `name` matches the map's state names. */
+export interface StateFacet {
+  name: string;
+  listingCount: number;
+}
+
 export interface BankFacet {
   slug: string;
   name: string;

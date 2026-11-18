@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import type { StateFacet } from '@/domain/listing';
 import { cn } from '@/lib/cn';
 
 /**
@@ -13,22 +14,15 @@ import { cn } from '@/lib/cn';
  * The placeholder holds the exact aspect the map draws at, so the section does not
  * reflow when it arrives.
  */
-export interface MapMarker {
-  city: string;
-  lon: number;
-  lat: number;
-  listings: number;
-}
-
 const CoverageMap = dynamic(() => import('./coverage-map'), {
   ssr: false,
   loading: () => <div className="aspect-1000/1071 w-full animate-pulse rounded-xl bg-ink-100" aria-hidden="true" />,
 });
 
-export function IndiaMap({ markers, className }: { markers: readonly MapMarker[]; className?: string }) {
+export function IndiaMap({ states, className }: { states: readonly StateFacet[]; className?: string }) {
   return (
     <div className={cn('relative', className)}>
-      <CoverageMap markers={markers} />
+      <CoverageMap states={states} />
     </div>
   );
 }

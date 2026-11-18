@@ -18,6 +18,15 @@ import { cn } from '@/lib/cn';
  * ever fall through to the generic building glyph, never select arbitrary markup.
  */
 
+/**
+ * The viewBoxes are not the exports' own. The designer's files came on three canvases
+ * (50x39, 48x34 and 50x50) with each drawing filling a different share of its canvas,
+ * so side by side the landmarks came out at visibly different sizes and heights. Each
+ * viewBox is now a square fitted to its drawing's measured bounds: the drawing spans
+ * the full width, centred, standing on a ground line 1.5 units above the bottom edge.
+ * Every landmark is the same width on the same baseline, whatever it was exported on.
+ * Re-derive the box from `getBBox()` if a path ever changes.
+ */
 interface CityGlyph {
   viewBox: string;
   paths: readonly string[];
@@ -25,7 +34,7 @@ interface CityGlyph {
 
 const CITY_GLYPHS = {
   'agra': {
-    viewBox: '0 0 50 39',
+    viewBox: '-0.76 -12.93 51.52 51.52',
     paths: [
       'M0.742203 37.0874H49.2578',
       'M3.43752 32.5952H46.5625V37.0874H3.43752V32.5952Z',
@@ -41,7 +50,7 @@ const CITY_GLYPHS = {
     ],
   },
   'ahmedabad': {
-    viewBox: '0 0 50 39',
+    viewBox: '-0.76 -12.93 51.52 51.52',
     paths: [
       'M0.742188 37.0874H49.2578',
       'M3.4375 32.5952H46.5625V37.0874H3.4375V32.5952Z',
@@ -57,7 +66,7 @@ const CITY_GLYPHS = {
     ],
   },
   'amritsar': {
-    viewBox: '0 0 48 37',
+    viewBox: '-0.50 -11.99 48.96 48.96',
     paths: [
       'M1 31.9333H46.9583M6.30288 35.4686H41.6554',
       'M8.0705 28.3982H39.8878',
@@ -71,7 +80,7 @@ const CITY_GLYPHS = {
     ],
   },
   'bengaluru': {
-    viewBox: '0 0 48 34',
+    viewBox: '-0.43 -13.77 48.03 48.03',
     paths: [
       'M1.06738 32.7549H46.097',
       'M3.56903 32.755V20.2468H43.5953V32.755',
@@ -85,7 +94,7 @@ const CITY_GLYPHS = {
     ],
   },
   'chennai': {
-    viewBox: '0 0 50 50',
+    viewBox: '3.19 2.40 43.63 43.63',
     paths: [
       'M4.6875 44.5312H45.3125',
       'M20.3125 44.5312V14.0625H29.6875V44.5312',
@@ -99,7 +108,7 @@ const CITY_GLYPHS = {
     ],
   },
   'delhi': {
-    viewBox: '0 0 50 50',
+    viewBox: '3.19 2.40 43.63 43.63',
     paths: [
       'M4.6875 44.5312H45.3125',
       'M14.0625 8.59375H35.9375V12.5H14.0625V8.59375Z',
@@ -112,7 +121,7 @@ const CITY_GLYPHS = {
     ],
   },
   'hyderabad': {
-    viewBox: '0 0 50 50',
+    viewBox: '3.19 2.40 43.63 43.63',
     paths: [
       'M4.6875 44.5312H45.3125',
       'M10.1562 44.5312V23.4375H39.8438V44.5312',
@@ -127,7 +136,7 @@ const CITY_GLYPHS = {
     ],
   },
   'jaipur': {
-    viewBox: '0 0 50 50',
+    viewBox: '3.19 2.40 43.63 43.63',
     paths: [
       'M4.6875 44.5312H45.3125',
       'M6.25 44.5312V31.25H10.9375V25H15.625V18.75H20.3125V12.5H29.6875V18.75H34.375V25H39.0625V31.25H43.75V44.5312',
@@ -140,7 +149,7 @@ const CITY_GLYPHS = {
     ],
   },
   'kolkata': {
-    viewBox: '0 0 50 50',
+    viewBox: '2.41 0.84 45.19 45.19',
     paths: [
       'M3.90625 44.5312H46.0938',
       'M6.25 44.5312V31.25H43.75V44.5312',
@@ -153,7 +162,7 @@ const CITY_GLYPHS = {
     ],
   },
   'lucknow': {
-    viewBox: '0 0 50 50',
+    viewBox: '1.63 -0.72 46.75 46.75',
     paths: [
       'M3.125 44.5312H46.875',
       'M10.9375 44.5312V26.5625C10.9375 18.75 17.1875 12.5 25 12.5C32.8125 12.5 39.0625 18.75 39.0625 26.5625V44.5312',
@@ -166,7 +175,7 @@ const CITY_GLYPHS = {
     ],
   },
   'mumbai': {
-    viewBox: '0 0 50 50',
+    viewBox: '3.19 2.41 43.63 43.63',
     paths: [
       'M4.6875 44.5312H45.3125',
       'M9.375 44.5312V20.3125H40.625V44.5312',
@@ -180,7 +189,7 @@ const CITY_GLYPHS = {
     ],
   },
   'pune': {
-    viewBox: '0 0 50 50',
+    viewBox: '3.19 2.40 43.63 43.63',
     paths: [
       'M4.6875 44.5312H45.3125',
       'M6.25 44.5312V25.7812H43.75V44.5312',
@@ -217,7 +226,9 @@ export function CityIcon({ slug, className }: { slug: string; className?: string
       viewBox={glyph.viewBox}
       fill="none"
       stroke="currentColor"
-      strokeWidth={2}
+      // In screen pixels, not viewBox units: the squares above differ in size, and a
+      // scaling stroke drew the smaller-framed landmarks with a visibly heavier line.
+      strokeWidth={1.5}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -225,7 +236,7 @@ export function CityIcon({ slug, className }: { slug: string; className?: string
       className={cn('size-6', className)}
     >
       {glyph.paths.map((d) => (
-        <path key={d} d={d} />
+        <path key={d} d={d} vectorEffect="non-scaling-stroke" />
       ))}
     </svg>
   );
