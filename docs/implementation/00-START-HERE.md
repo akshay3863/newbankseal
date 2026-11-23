@@ -29,7 +29,7 @@ Inspect `package.json`, `src/app` or `app`, existing components, auth setup, dat
 - No secrets committed; production environment checklist completed.
 
 ## Documents
-01 foundation/contracts; 02 DB/API; 03 auth; 04 Super Admin; 05 user dashboard; 06 notifications; 07 SEO; 08 existing UI integration; 09 QA/deployment; 10 parallel tracker.
+01 foundation/contracts; 01A foundation decisions (how 01 was applied to this repo: names, contracts, routes, file ownership — read before any workstream); 02 DB/API; 03 auth; 04 Super Admin; 05 user dashboard; 06 notifications; 07 SEO; 08 existing UI integration; 09 QA/deployment; 10 parallel tracker.
 
 ## Paste this into Claude Code first
 > Read `docs/implementation/00-START-HERE.md` and `01-FOUNDATION-CONTRACTS.md`. Audit the existing repository and summarize existing vs missing functionality. Do not code until you propose a concrete file ownership plan, dependencies, and any conflicts with the current stack. Preserve the existing landing, listing, and detail UI. Implement only the workstream document I assign, with tests and a concise handoff report.

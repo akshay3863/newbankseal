@@ -29,7 +29,7 @@
 6. Confirmation existing UI was preserved.
 
 ## Claude Code workstream prompt template
-> Read `docs/implementation/00-START-HERE.md`, `01-FOUNDATION-CONTRACTS.md`, and `docs/implementation/<WORKSTREAM>.md`. Inspect the actual repository. You own only this workstream. First identify exact files you plan to modify, dependencies and missing interfaces. Then implement in small commits, preserve existing landing/listing/detail UI, add tests, run lint/typecheck/build as available, and produce the six-point handoff report. Do not touch files assigned to another worker or invent missing credentials; request a contract change instead.
+> Read `docs/implementation/00-START-HERE.md`, `01-FOUNDATION-CONTRACTS.md`, `01A-FOUNDATION-ADR.md`, and `docs/implementation/<WORKSTREAM>.md`. Inspect the actual repository. You own only this workstream. First identify exact files you plan to modify, dependencies and missing interfaces. Then implement in small commits, preserve existing landing/listing/detail UI, add tests, run lint/typecheck/build as available, and produce the six-point handoff report. Do not touch files assigned to another worker or invent missing credentials; request a contract change instead.
 
 ## Progress board
 - [ ] Audit + contracts approved
