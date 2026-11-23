@@ -1,3 +1,5 @@
+import 'server-only';
+
 import type { CityFacet, ListingCard } from '@/domain/listing';
 import { buildSeedListings, SEED_BANKS, SEED_CITIES } from '@/db/seed-data';
 

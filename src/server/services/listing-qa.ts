@@ -1,3 +1,5 @@
+import 'server-only';
+
 import type { ListingDetail } from '@/domain/listing';
 import { POSSESSION_DETAIL_LABEL } from '@/domain/listing';
 import { formatDateTime, formatInr } from '@/lib/format';

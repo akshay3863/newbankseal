@@ -1,3 +1,5 @@
+import 'server-only';
+
 import { SEED_BANKS, SEED_CITIES, buildSeedListings } from '@/db/seed-data';
 import type { ListingDetail, NearbyCategory, NearbyPlace } from '@/domain/listing';
 import { SEED_LISTING_CARDS } from './seed-projection';

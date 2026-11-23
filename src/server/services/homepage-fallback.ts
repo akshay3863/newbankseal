@@ -1,3 +1,5 @@
+import 'server-only';
+
 import { SEED_BANKS, SEED_CATEGORIES, SEED_CITIES, buildSeedArticles } from '@/db/seed-data';
 import type { ArticleCard, StateFacet } from '@/domain/listing';
 import { SEED_LISTING_CARDS, toCityFacet } from './seed-projection';
