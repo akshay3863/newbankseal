@@ -10,6 +10,9 @@
  * serialisable and paise precision is not needed for display.
  */
 
+import type { PaginatedResult } from './api';
+import type { AuctionStatus } from './auction';
+
 export type AssetType = 'residential' | 'commercial' | 'industrial' | 'vehicle' | 'machinery' | 'gold' | 'land';
 
 export type SaleType = 'sarfaesi' | 'liquidation' | 'drt' | 'private_treaty';
@@ -44,12 +47,37 @@ export interface ListingCard {
 }
 
 /** One page of search results plus what the UI needs to render pagination. */
-export interface ListingSearchResult {
-  items: ListingCard[];
-  total: number;
+export type ListingSearchResult = PaginatedResult<ListingCard>;
+
+export type ListingSort = 'newest' | 'featured' | 'price_asc' | 'price_desc';
+
+/**
+ * Public browse filters — 01's `PropertyFilters`: the full parameter set behind
+ * `GET /api/listings` and `/explore` (02). Every filter narrows *within* `publicScope()`;
+ * no combination can widen what a visitor may see.
+ *
+ * `ExploreQuery` (`src/lib/validation/listing.ts`) implements the subset the browse page
+ * supports today. The Data workstream extends that schema to this contract.
+ */
+export interface ListingFilters {
+  q?: string;
+  /** City slug. */
+  city?: string;
+  /** State slug, e.g. `maharashtra`. */
+  state?: string;
+  /** Bank slug. */
+  bank?: string;
+  /** Category slug — 02's `type`. */
+  category?: string;
+  possession?: PossessionType;
+  /** Reserve price bounds in whole rupees, inclusive — 02's `minPrice` / `maxPrice`. */
+  minReserveInr?: number;
+  maxReserveInr?: number;
+  /** 02's `status`. CANCELLED is never offered as a public filter. */
+  auctionStatus?: Exclude<AuctionStatus, 'CANCELLED'>;
+  sort: ListingSort;
   page: number;
   perPage: number;
-  totalPages: number;
 }
 
 /** A locality within a city, for the "Top Localities" rail. */
