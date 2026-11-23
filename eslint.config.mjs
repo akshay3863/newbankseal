@@ -4,6 +4,18 @@ import { FlatCompat } from '@eslint/eslintrc';
 
 const compat = new FlatCompat({ baseDirectory: dirname(fileURLToPath(import.meta.url)) });
 
+const NO_DATABASE_IN_UI = {
+  group: ['@/db', '@/db/*', '@/server/repositories/*'],
+  message:
+    'UI code must not access the database directly. Fetch in a Server Component, Server Action or route handler and pass the result down as props.',
+};
+
+const NO_ADMIN_ON_PUBLIC_SURFACES = {
+  group: ['@/domain/admin', '@/domain/admin/*', '@/server/services/admin', '@/server/services/admin/*'],
+  message:
+    'Public pages, features and APIs must not import admin-only contracts or services. Use the public DTOs in @/domain.',
+};
+
 const eslintConfig = [
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
 
@@ -30,18 +42,35 @@ const eslintConfig = [
      */
     files: ['src/components/**/*.{ts,tsx}', 'src/features/**/*.{ts,tsx}'],
     rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            {
-              group: ['@/db', '@/db/*', '@/server/repositories/*'],
-              message:
-                'UI code must not access the database directly. Fetch in a Server Component, Server Action or route handler and pass the result down as props.',
-            },
-          ],
-        },
-      ],
+      'no-restricted-imports': ['error', { patterns: [NO_DATABASE_IN_UI] }],
+    },
+  },
+
+  {
+    /**
+     * Public/admin separation (01-FOUNDATION: "public fields vs admin-only fields
+     * explicitly separated"). Admin-only DTOs live in `@/domain/admin` and admin services
+     * in `@/server/services/admin`; no public page, public feature or public API may
+     * import them, so an admin-only field cannot reach an anonymous payload by accident.
+     *
+     * The public feature folders also match the block above, and a later block replaces
+     * an earlier block's options for the same rule — so they restate the database rule.
+     */
+    files: ['src/features/{home,explore,listing}/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', { patterns: [NO_DATABASE_IN_UI, NO_ADMIN_ON_PUBLIC_SURFACES] }],
+    },
+  },
+
+  {
+    files: [
+      'src/app/page.tsx',
+      'src/app/{explore,listings,banks,cities}/**/*.{ts,tsx}',
+      'src/app/sitemap.ts',
+      'src/app/api/{listings,banks,locations}/**/*.ts',
+    ],
+    rules: {
+      'no-restricted-imports': ['error', { patterns: [NO_ADMIN_ON_PUBLIC_SURFACES] }],
     },
   },
 ];
