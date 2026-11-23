@@ -1,3 +1,5 @@
+import 'server-only';
+
 import { forbidden, unauthenticated } from '@/lib/errors';
 import type { SessionContext } from './session';
 
@@ -11,6 +13,25 @@ import type { SessionContext } from './session';
  */
 
 export type Role = 'buyer' | 'seller' | 'bank_officer' | 'admin';
+
+/**
+ * 01-FOUNDATION defines two roles, USER and SUPER_ADMIN. They are stored as `buyer` and
+ * `admin`: renaming Postgres enum values buys nothing, and the stored names already
+ * appear in sessions and in audit rows.
+ *
+ * `seller` and `bank_officer` stay in the enum but nothing assigns them. Sign-up always
+ * creates a `buyer`, and the only way to `admin` is the provisioning CLI (03) — no
+ * request can choose its own role.
+ */
+export const USER_ROLE = 'buyer' satisfies Role;
+export const SUPER_ADMIN_ROLE = 'admin' satisfies Role;
+
+export const ROLE_LABEL: Record<Role, string> = {
+  buyer: 'User',
+  seller: 'Seller',
+  bank_officer: 'Bank officer',
+  admin: 'Super Admin',
+};
 
 /**
  * `listing:view_protected` covers the borrower's name, the full address, the bank's
@@ -35,10 +56,31 @@ export type Permission =
   | 'user:read_any'
   | 'user:update_role'
   | 'user:suspend'
-  | 'audit:read';
+  | 'audit:read'
+  // Declared up front by the foundation workstream so feature workstreams never need to
+  // edit this file (10: shared files belong to the integration owner).
+  /** Enter `/admin/**` at all. Each admin write still checks its own permission. */
+  | 'admin:access'
+  | 'auction:manage'
+  /** Sign uploads, attach, reorder and delete listing media. */
+  | 'media:manage'
+  | 'bank:manage'
+  | 'location:manage'
+  /** The caller's *own* saved searches and alert settings — never another user's. */
+  | 'saved_search:manage'
+  | 'notification_pref:manage'
+  /** Delivery logs and template previews in the admin. */
+  | 'notification:read_any';
 
 const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
-  buyer: ['listing:read_public', 'watchlist:manage', 'enquiry:create', 'enquiry:read_own'],
+  buyer: [
+    'listing:read_public',
+    'watchlist:manage',
+    'enquiry:create',
+    'enquiry:read_own',
+    'saved_search:manage',
+    'notification_pref:manage',
+  ],
   seller: [
     'listing:read_public',
     'listing:create',
@@ -74,6 +116,14 @@ const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
     'user:update_role',
     'user:suspend',
     'audit:read',
+    'admin:access',
+    'auction:manage',
+    'media:manage',
+    'bank:manage',
+    'location:manage',
+    'saved_search:manage',
+    'notification_pref:manage',
+    'notification:read_any',
   ],
 };
 

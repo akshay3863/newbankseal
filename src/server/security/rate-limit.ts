@@ -1,3 +1,5 @@
+import 'server-only';
+
 import { sha256Hex } from './crypto';
 
 /**
@@ -73,6 +75,16 @@ export const RATE_LIMITS = {
   // Matches the quota the listing assistant shows the visitor.
   listingQuestion: { name: 'listing-question', limit: 5, windowMs: 60 * 60_000 },
   api: { name: 'api', limit: 120, windowMs: 60_000 },
+  // Declared by the foundation workstream for the endpoints 03–07 add, so no feature
+  // branch has to edit this shared file.
+  emailVerification: { name: 'email-verification', limit: 5, windowMs: 60 * 60_000 },
+  /** Saves, saved searches and alert settings — the caller's own data. */
+  accountWrite: { name: 'account-write', limit: 60, windowMs: 60_000 },
+  adminWrite: { name: 'admin-write', limit: 120, windowMs: 60_000 },
+  mediaSign: { name: 'media-sign', limit: 60, windowMs: 60_000 },
+  cron: { name: 'cron', limit: 10, windowMs: 60_000 },
+  // Generous: SES delivers bounce and complaint notifications in bursts.
+  webhook: { name: 'webhook', limit: 600, windowMs: 60_000 },
 } as const satisfies Record<string, RateLimitRule>;
 
 export interface RateLimitResult {
