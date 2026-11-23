@@ -28,6 +28,22 @@ const securityHeaders = [
   { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' },
 ];
 
+/**
+ * Our Cloudinary cloud name, from `cloudinary://<key>:<secret>@<cloud>`. Only the name is
+ * read. Inlined rather than imported from `src/lib/cloudinary-url.ts` because this file
+ * is loaded as ESM before the app's module resolution exists.
+ */
+function cloudinaryCloudName(): string | null {
+  try {
+    const url = new URL(process.env.CLOUDINARY_URL?.trim() ?? '');
+    return url.protocol === 'cloudinary:' && /^[A-Za-z0-9_-]{1,64}$/.test(url.hostname) ? url.hostname : null;
+  } catch {
+    return null;
+  }
+}
+
+const cloudinaryCloud = cloudinaryCloudName();
+
 const nextConfig: NextConfig = {
   /**
    * `next build` and `next dev` share `.next` by default, so a verification build run
@@ -56,7 +72,14 @@ const nextConfig: NextConfig = {
     // rejects undeclared ones rather than silently re-encoding at the default.
     qualities: [75, 82],
     // Allow-list remote image hosts explicitly; never use a wildcard.
-    remotePatterns: [{ protocol: 'https', hostname: 'images.unsplash.com' }],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      // Scoped to our own cloud. Allowing all of res.cloudinary.com would let anyone run
+      // any Cloudinary-hosted image through this deployment's optimiser, on our bill.
+      ...(cloudinaryCloud
+        ? [{ protocol: 'https' as const, hostname: 'res.cloudinary.com', pathname: `/${cloudinaryCloud}/**` }]
+        : []),
+    ],
   },
 
   async headers() {

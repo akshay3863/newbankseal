@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { parseCloudinaryUrl, type CloudinaryCredentials } from '@/lib/cloudinary-url';
 
 /**
  * Fail-fast environment validation.
@@ -46,10 +47,49 @@ const serverSchema = z.object({
   RATE_LIMIT_REDIS_TOKEN: z.string().optional(),
 
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
+
+  /*
+   * Everything below belongs to a single subsystem, so — for the reason given on
+   * DATABASE_URL — each is a plain optional string here and is validated by its own
+   * accessor further down. A malformed value then breaks that feature, loudly, instead
+   * of every route that parses this schema.
+   */
+
+  /** `cloudinary://<api_key>:<api_secret>@<cloud_name>`. See `getCloudinaryConfig()`. */
+  CLOUDINARY_URL: z.string().optional(),
+
+  /** `console` | `ses`. Must be explicit in production. See `getEmailConfig()`. */
+  EMAIL_PROVIDER: z.string().optional(),
+  /** Verified SES sender, e.g. `Bank Seal <no-reply@example.com>`. */
+  EMAIL_FROM: z.string().optional(),
+  AWS_REGION: z.string().optional(),
+  // Read by the AWS SDK's own credential chain. Declared so the contract lives in one
+  // place; never read or logged by application code.
+  AWS_ACCESS_KEY_ID: z.string().optional(),
+  AWS_SECRET_ACCESS_KEY: z.string().optional(),
+  SES_CONFIGURATION_SET: z.string().optional(),
+  /** The only SNS topic the bounce/complaint webhook accepts messages from. */
+  SES_SNS_TOPIC_ARN: z.string().optional(),
+
+  /** Bearer secret for `/api/internal/*`. See `getCronSecret()`. */
+  CRON_SECRET: z.string().optional(),
+
+  /** Search Console HTML-tag verification token. */
+  GOOGLE_SITE_VERIFICATION: z.string().optional(),
 });
 
 const clientSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url().default('http://localhost:3000'),
+  /**
+   * GA4 measurement id. Analytics is optional, so a value that is not one is dropped
+   * instead of failing the build — this schema is parsed at module load.
+   */
+  NEXT_PUBLIC_GA_MEASUREMENT_ID: z
+    .string()
+    .trim()
+    .regex(/^G-[A-Z0-9]{4,}$/)
+    .optional()
+    .catch(undefined),
 });
 
 export type ServerEnv = z.infer<typeof serverSchema>;
@@ -139,6 +179,8 @@ function normaliseOrigin(value: string | undefined): string | null {
 // throw during a build the way parsing raw `process.env` did.
 export const clientEnv: ClientEnv = clientSchema.parse({
   NEXT_PUBLIC_APP_URL: resolvePublicAppUrl(),
+  // Written out in full so Next can inline it into client bundles.
+  NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
 });
 
 export const isProduction = process.env.NODE_ENV === 'production';
@@ -158,4 +200,74 @@ export function getDatabaseUrl(): string {
     );
   }
   return url;
+}
+
+/** Cloudinary credentials for signing uploads and deleting assets, or a clear failure. */
+export function getCloudinaryConfig(): CloudinaryCredentials {
+  const credentials = parseCloudinaryUrl(getServerEnv().CLOUDINARY_URL);
+  if (!credentials) {
+    throw new Error(
+      'CLOUDINARY_URL is missing or malformed. Expected cloudinary://<api_key>:<api_secret>@<cloud_name>.',
+    );
+  }
+  return credentials;
+}
+
+const MIN_CRON_SECRET_LENGTH = 32;
+
+/**
+ * The bearer secret scheduled jobs must present, or null.
+ *
+ * Null when unset or too short to be a secret — and a null secret rejects every caller.
+ * A job endpoint whose secret was never configured must be unreachable, not open.
+ */
+export function getCronSecret(): string | null {
+  const secret = getServerEnv().CRON_SECRET?.trim();
+  if (!secret || secret.length < MIN_CRON_SECRET_LENGTH) return null;
+  return secret;
+}
+
+export type EmailProviderName = 'console' | 'ses';
+
+export interface EmailConfig {
+  provider: EmailProviderName;
+  from: string | null;
+  region: string | null;
+  configurationSet: string | null;
+  snsTopicArn: string | null;
+}
+
+/**
+ * Mail configuration, or a clear failure.
+ *
+ * Production must name its provider. Defaulting a production process to `console`
+ * would turn every verification and reset email into a log line while the page tells
+ * the user to check their inbox. A preview that must never send mail says `console`.
+ */
+export function getEmailConfig(): EmailConfig {
+  const env = getServerEnv();
+  const requested = env.EMAIL_PROVIDER?.trim();
+
+  let provider: EmailProviderName | null;
+  if (requested === 'console' || requested === 'ses') provider = requested;
+  else if (requested) throw new Error('EMAIL_PROVIDER must be "console" or "ses".');
+  else provider = env.NODE_ENV === 'production' ? null : 'console';
+
+  if (!provider) {
+    throw new Error('EMAIL_PROVIDER must be set in production: "ses", or "console" for a deployment that must not send mail.');
+  }
+
+  const from = env.EMAIL_FROM?.trim() || null;
+  const region = env.AWS_REGION?.trim() || null;
+  if (provider === 'ses' && (!from || !region)) {
+    throw new Error('EMAIL_PROVIDER=ses requires EMAIL_FROM and AWS_REGION.');
+  }
+
+  return {
+    provider,
+    from,
+    region,
+    configurationSet: env.SES_CONFIGURATION_SET?.trim() || null,
+    snsTopicArn: env.SES_SNS_TOPIC_ARN?.trim() || null,
+  };
 }
