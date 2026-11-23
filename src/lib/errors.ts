@@ -75,6 +75,19 @@ export function validationFailed(fieldErrors: Record<string, string[]>) {
   return new AppError('VALIDATION_FAILED', undefined, { fieldErrors });
 }
 
+/**
+ * A query string that fails its schema. 400 rather than the body's 422 (02: "query
+ * validation returns 400") — a bad filter is a malformed request, not a rejected entity.
+ */
+export function invalidQuery(fieldErrors: Record<string, string[]>) {
+  return new AppError('BAD_REQUEST', undefined, { fieldErrors });
+}
+
+/** The user-safe message for a code. Also used by the browser when a body is unreadable. */
+export function safeMessage(code: ErrorCode): string {
+  return SAFE_MESSAGE[code];
+}
+
 export interface PublicError {
   code: ErrorCode;
   message: string;

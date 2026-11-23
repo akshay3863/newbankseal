@@ -3,7 +3,7 @@ import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { BankFacet, CategoryFacet } from '@/domain/listing';
 import { cn } from '@/lib/cn';
-import type { ExploreQuery } from '@/lib/validation/auth';
+import type { ExploreQuery } from '@/lib/validation/listing';
 import { buildExploreHref } from '../lib/href';
 import { FacetSelect, SortSelect } from './filter-selects';
 

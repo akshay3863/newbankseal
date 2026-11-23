@@ -7,7 +7,7 @@ import type {
   LocalityFacet,
 } from '@/domain/listing';
 import { logger } from '@/lib/logger';
-import type { ExploreQuery } from '@/lib/validation/auth';
+import type { ExploreQuery } from '@/lib/validation/listing';
 import { findBanks, findCategories } from '@/server/repositories/catalog-repository';
 import { findLocalityFacets, searchListings } from '@/server/repositories/listing-repository';
 import { buildExploreFallback } from './explore-fallback';

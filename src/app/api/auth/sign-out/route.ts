@@ -1,5 +1,4 @@
-import { defineRoute, json } from '@/server/api/route-handler';
-import { getCurrentSession } from '@/server/auth/current-user';
+import { defineRoute } from '@/server/api/route-handler';
 import { destroySession } from '@/server/auth/session';
 import { recordAudit } from '@/server/services/audit-service';
 
@@ -12,9 +11,7 @@ import { recordAudit } from '@/server/services/audit-service';
  * Always returns 204, whether or not a session was found — an unauthenticated caller
  * learns nothing, and a client retrying after a network blip gets the same answer.
  */
-export const POST = defineRoute({}, async ({ requestContext }) => {
-  const session = await getCurrentSession();
-
+export const POST = defineRoute({}, async ({ session, requestContext, respond }) => {
   await destroySession();
 
   if (session) {
@@ -28,7 +25,9 @@ export const POST = defineRoute({}, async ({ requestContext }) => {
     });
   }
 
-  return json(null, 204);
+  // Not `json(null, 204)`: a 204 cannot carry a body, and building one throws — which
+  // used to turn every sign-out into a logged 500 after the session was already gone.
+  return respond.noContent();
 });
 
 export const dynamic = 'force-dynamic';

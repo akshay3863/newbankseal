@@ -1,6 +1,6 @@
 import { notFound } from '@/lib/errors';
-import { listingQuestionSchema } from '@/lib/validation/auth';
-import { defineRoute, json } from '@/server/api/route-handler';
+import { listingQuestionSchema } from '@/lib/validation/listing';
+import { defineRoute } from '@/server/api/route-handler';
 import { RATE_LIMITS } from '@/server/security/rate-limit';
 import { getListingDetail } from '@/server/services/listing-detail-service';
 import { answerListingQuestion } from '@/server/services/listing-qa';
@@ -16,13 +16,13 @@ import { answerListingQuestion } from '@/server/services/listing-qa';
  */
 export const POST = defineRoute(
   { schema: listingQuestionSchema, rateLimit: RATE_LIMITS.listingQuestion },
-  async ({ body, session }) => {
+  async ({ body, session, respond }) => {
     const data = await getListingDetail(body.slug, session);
     if (!data) throw notFound();
 
     const result = answerListingQuestion(data.listing, body.question);
 
-    return json({ answer: result.answer, grounded: result.grounded });
+    return respond.ok({ answer: result.answer, grounded: result.grounded });
   },
 );
 

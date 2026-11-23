@@ -10,7 +10,7 @@ import { ExploreSidebar } from '@/features/explore/components/explore-sidebar';
 import { ListingRow } from '@/features/explore/components/listing-row';
 import { clientEnv } from '@/lib/env';
 import { formatCount } from '@/lib/format';
-import { exploreQuerySchema } from '@/lib/validation/auth';
+import { exploreQuerySchema } from '@/lib/validation/listing';
 import { getExplorePageData } from '@/server/services/explore-service';
 
 export const metadata: Metadata = {

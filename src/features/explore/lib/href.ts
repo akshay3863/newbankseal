@@ -1,4 +1,4 @@
-import type { ExploreQuery } from '@/lib/validation/auth';
+import type { ExploreQuery } from '@/lib/validation/listing';
 
 /**
  * Build a URL for the browse page with some parameters changed.

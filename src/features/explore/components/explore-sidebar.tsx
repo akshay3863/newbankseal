@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { ShareIcon, type ShareIconKey } from '@/components/ui/share-icon';
 import type { LocalityFacet } from '@/domain/listing';
-import type { ExploreQuery } from '@/lib/validation/auth';
+import type { ExploreQuery } from '@/lib/validation/listing';
 import { buildExploreHref } from '../lib/href';
 import { AdSlot } from './ad-slot';
 

@@ -1,6 +1,8 @@
+import 'server-only';
+
 import { SEED_BANKS, SEED_CATEGORIES, SEED_CITIES } from '@/db/seed-data';
 import type { ListingCard, LocalityFacet } from '@/domain/listing';
-import type { ExploreQuery } from '@/lib/validation/auth';
+import type { ExploreQuery } from '@/lib/validation/listing';
 import { SEED_LISTING_CARDS } from './seed-projection';
 import type { ExplorePageData } from './explore-service';
 

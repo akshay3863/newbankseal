@@ -1,5 +1,7 @@
 'use client';
 
+import type { ApiResponse } from '@/domain/api';
+import { readApiResponse } from '@/lib/api-response';
 import { CSRF_COOKIE, CSRF_HEADER } from '@/lib/csrf-constants';
 
 /**
@@ -45,4 +47,18 @@ export async function apiFetch(input: string, init: RequestInit = {}): Promise<R
     // Never let a mutation be served from cache.
     cache: 'no-store',
   });
+}
+
+/**
+ * `apiFetch`, read as the `{ data, error, meta }` envelope.
+ *
+ * A network failure still rejects rather than resolving to an error envelope, so a
+ * caller can tell "the server said no" (`result.error`) from "we never reached it".
+ */
+export async function requestApi<T>(
+  input: string,
+  init: RequestInit = {},
+  options?: { fallbackMessage?: string },
+): Promise<ApiResponse<T>> {
+  return readApiResponse<T>(await apiFetch(input, init), options);
 }

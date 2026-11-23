@@ -7,7 +7,7 @@ import { useState, type FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { apiFetch } from '@/lib/csrf-client';
+import { requestApi } from '@/lib/csrf-client';
 import { siteConfig } from '@/lib/site-config';
 import { isSafeRedirectPath, signInSchema } from '@/lib/validation/auth';
 import { FormAlert } from './form-alert';
@@ -47,20 +47,19 @@ export function SignInForm({ next }: { next?: string }) {
 
     setPending(true);
     try {
-      const response = await apiFetch('/api/auth/sign-in', {
-        method: 'POST',
-        body: JSON.stringify(parsed.data),
-      });
+      const result = await requestApi<{ redirectTo?: string }>(
+        '/api/auth/sign-in',
+        { method: 'POST', body: JSON.stringify(parsed.data) },
+        { fallbackMessage: 'We could not sign you in. Check your details and try again.' },
+      );
 
-      if (!response.ok) {
-        const problem = (await response.json().catch(() => null)) as { message?: string } | null;
-        setFormError(problem?.message ?? 'We could not sign you in. Check your details and try again.');
+      if (result.error) {
+        setFormError(result.error.message);
         return;
       }
 
-      const result = (await response.json()) as { redirectTo?: string };
-      const destination =
-        result.redirectTo && isSafeRedirectPath(result.redirectTo) ? result.redirectTo : '/dashboard';
+      const { redirectTo } = result.data;
+      const destination = redirectTo && isSafeRedirectPath(redirectTo) ? redirectTo : '/dashboard';
 
       // Refresh first so Server Components re-read the new session cookie.
       router.refresh();

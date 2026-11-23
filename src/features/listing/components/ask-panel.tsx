@@ -3,7 +3,7 @@
 import { SendHorizontal } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { Card } from '@/components/ui/card';
-import { apiFetch } from '@/lib/csrf-client';
+import { requestApi } from '@/lib/csrf-client';
 import { cn } from '@/lib/cn';
 
 /**
@@ -49,19 +49,19 @@ export function AskPanel({
     setError(null);
 
     try {
-      const response = await apiFetch('/api/listings/ask', {
-        method: 'POST',
-        body: JSON.stringify({ slug, question: trimmed }),
-      });
+      const result = await requestApi<{ answer: string; grounded: boolean }>(
+        '/api/listings/ask',
+        { method: 'POST', body: JSON.stringify({ slug, question: trimmed }) },
+        { fallbackMessage: 'That question could not be answered right now.' },
+      );
 
-      if (!response.ok) {
-        const problem = (await response.json().catch(() => null)) as { message?: string } | null;
-        setError(problem?.message ?? 'That question could not be answered right now.');
+      if (result.error) {
+        setError(result.error.message);
         return;
       }
 
-      const result = (await response.json()) as { answer: string; grounded: boolean };
-      setHistory((previous) => [...previous, { question: trimmed, answer: result.answer, grounded: result.grounded }]);
+      const { answer, grounded } = result.data;
+      setHistory((previous) => [...previous, { question: trimmed, answer, grounded }]);
       setDraft('');
     } catch {
       setError('We could not reach the server. Please check your connection and try again.');

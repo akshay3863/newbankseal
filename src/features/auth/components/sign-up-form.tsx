@@ -7,7 +7,7 @@ import { useState, type FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { apiFetch } from '@/lib/csrf-client';
+import { requestApi } from '@/lib/csrf-client';
 import { signUpSchema } from '@/lib/validation/auth';
 import { FormAlert } from './form-alert';
 import { PasswordInput } from './password-input';
@@ -46,17 +46,15 @@ export function SignUpForm() {
 
     setPending(true);
     try {
-      const response = await apiFetch('/api/auth/sign-up', {
-        method: 'POST',
-        body: JSON.stringify(parsed.data),
-      });
+      const result = await requestApi<unknown>(
+        '/api/auth/sign-up',
+        { method: 'POST', body: JSON.stringify(parsed.data) },
+        { fallbackMessage: 'We could not create your account. Please try again.' },
+      );
 
-      if (!response.ok) {
-        const problem = (await response.json().catch(() => null)) as
-          | { message?: string; fieldErrors?: Record<string, string[]> }
-          | null;
-        if (problem?.fieldErrors) setFieldErrors(problem.fieldErrors);
-        setFormError(problem?.message ?? 'We could not create your account. Please try again.');
+      if (result.error) {
+        if (result.error.fieldErrors) setFieldErrors(result.error.fieldErrors);
+        setFormError(result.error.message);
         return;
       }
 
